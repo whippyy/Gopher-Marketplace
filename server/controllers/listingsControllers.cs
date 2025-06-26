@@ -24,15 +24,20 @@ public class ListingsController : ControllerBase
 
     // POST: api/listings
     [HttpPost]
-    public ActionResult<Listing> CreateListing([FromBody] Listing listing)
+    public ActionResult<Listing> CreateListing([FromBody] ListingDto listingDto)
     {
-        // Basic UMN email validation
-        if (!listing.ContactEmail.EndsWith("@umn.edu"))
-        {
-            return BadRequest("Only UMN emails (@umn.edu) are allowed.");
-        }
+        if (!listingDto.ContactEmail.EndsWith("@umn.edu"))
+            return BadRequest("Only UMN emails allowed.");
 
-        listing.CreatedAt = DateTime.UtcNow;
+        var listing = new Listing
+        {
+            Title = listingDto.Title,
+            Description = listingDto.Description,
+            Price = listingDto.Price,
+            ContactEmail = listingDto.ContactEmail,
+            CreatedAt = DateTime.UtcNow
+        };
+
         _db.Listings.Add(listing);
         _db.SaveChanges();
 
