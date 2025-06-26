@@ -24,23 +24,42 @@ public class ListingsController : ControllerBase
 
     // POST: api/listings
     [HttpPost]
-    public ActionResult<Listing> CreateListing([FromBody] ListingDto listingDto)
+    public ActionResult<Listing> CreateListing([FromBody] ListingDto newListing)
     {
-        if (!listingDto.ContactEmail.EndsWith("@umn.edu"))
-            return BadRequest("Only UMN emails allowed.");
+        // 1. Validate UMN email
+        if (!newListing.ContactEmail.EndsWith("@umn.edu", StringComparison.OrdinalIgnoreCase))
+        {
+            return BadRequest("Only @umn.edu emails are allowed.");
+        }
 
+        // 2. Validate price
+        if (newListing.Price <= 0)
+        {
+            return BadRequest("Price must be greater than $0.");
+        }
+
+        // 3. Validate title
+        if (string.IsNullOrWhiteSpace(newListing.Title))
+        {
+            return BadRequest("Title is required.");
+        }
+
+        // 4. Create the listing
         var listing = new Listing
         {
-            Title = listingDto.Title,
-            Description = listingDto.Description,
-            Price = listingDto.Price,
-            ContactEmail = listingDto.ContactEmail,
+            Title = newListing.Title.Trim(),
+            Description = newListing.Description?.Trim(),
+            Price = newListing.Price,
+            ContactEmail = newListing.ContactEmail.Trim().ToLower(),
             CreatedAt = DateTime.UtcNow
         };
 
         _db.Listings.Add(listing);
         _db.SaveChanges();
 
-        return CreatedAtAction(nameof(GetListings), listing);
+        // 5. Return 201 Created with the new listing
+        return CreatedAtAction(
+            actionName: nameof(GetListings),
+            value: listing);
     }
 }
