@@ -62,4 +62,62 @@ public class ListingsController : ControllerBase
             actionName: nameof(GetListings),
             value: listing);
     }
+
+    // PATCH: api/listings/{id}
+    [HttpPatch("{id}")]
+    public ActionResult<Listing> UpdateListing(int id, [FromBody] ListingDto updateDto)
+    {
+        // Find the listing
+        var listing = _db.Listings.Find(id);
+        if (listing == null)
+        {
+            return NotFound();
+        }
+
+        // Validate UMN email if provided
+        if (!string.IsNullOrEmpty(updateDto.ContactEmail) &&
+            !updateDto.ContactEmail.EndsWith("@umn.edu", StringComparison.OrdinalIgnoreCase))
+        {
+            return BadRequest("Only @umn.edu emails allowed.");
+        }
+
+        // Apply updates (only modify provided fields)
+        if (!string.IsNullOrWhiteSpace(updateDto.Title))
+            listing.Title = updateDto.Title.Trim();
+
+        if (updateDto.Description != null)
+            listing.Description = updateDto.Description.Trim();
+
+        if (updateDto.Price > 0)
+            listing.Price = updateDto.Price;
+
+        if (!string.IsNullOrEmpty(updateDto.ContactEmail))
+            listing.ContactEmail = updateDto.ContactEmail.Trim().ToLower();
+
+        _db.SaveChanges();
+        return Ok(listing);
+    }
+
+    // DELETE: api/listings/{id}
+    [HttpDelete("{id}")]
+    public IActionResult DeleteListing(int id)
+    {
+        var listing = _db.Listings.Find(id);
+        if (listing == null)
+        {
+            return NotFound();
+        }
+
+        _db.Listings.Remove(listing);
+        _db.SaveChanges();
+        return NoContent(); // HTTP 204
+    }
+    
+    // GET: api/listings/{id}
+    [HttpGet("{id}")]
+    public ActionResult<Listing> GetListing(int id)
+    {
+        var listing = _db.Listings.Find(id);
+        return listing != null ? Ok(listing) : NotFound();
+    }
 }
