@@ -1,8 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using GopherMarketplace.Data;
 using GopherMarketplace.Models;
+using AspNetCoreRateLimit;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure rate limiting
+builder.Services.AddMemoryCache();
+builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
+builder.Services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+builder.Services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 
 // Add SQLite
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -35,4 +43,5 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+app.UseIpRateLimiting();
 app.Run();
