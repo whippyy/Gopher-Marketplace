@@ -75,7 +75,7 @@ public class ListingsController : ControllerBase
         }
 
         // Validate UMN email if provided
-        if (!string.IsNullOrEmpty(updateDto.ContactEmail) && 
+        if (!string.IsNullOrEmpty(updateDto.ContactEmail) &&
             !updateDto.ContactEmail.EndsWith("@umn.edu", StringComparison.OrdinalIgnoreCase))
         {
             return BadRequest("Only @umn.edu emails allowed.");
@@ -111,5 +111,13 @@ public class ListingsController : ControllerBase
         _db.Listings.Remove(listing);
         _db.SaveChanges();
         return NoContent(); // HTTP 204
+    }
+    
+    // GET: api/listings/{id}
+    [HttpGet("{id}")]
+    public ActionResult<Listing> GetListing(int id)
+    {
+        var listing = _db.Listings.Find(id);
+        return listing != null ? Ok(listing) : NotFound();
     }
 }
