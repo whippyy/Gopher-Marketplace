@@ -8,4 +8,5 @@ public class Listing
     public decimal Price { get; set; }
     public required string ContactEmail { get; set; }  // Will validate @umn.edu later
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public required string OwnerId { get; set; }
 }

@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using GopherMarketplace.Data;
 using GopherMarketplace.Models;
 using AspNetCoreRateLimit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,10 +13,26 @@ builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection(
 builder.Services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
 builder.Services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
 builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+builder.Services.AddSingleton<AspNetCoreRateLimit.IProcessingStrategy, AspNetCoreRateLimit.AsyncKeyLockProcessingStrategy>();
 
 // Add SQLite
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Configure JWT Bearer authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = "https://securetoken.google.com/your-firebase-project";
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = "https://securetoken.google.com/your-firebase-project",
+            ValidateAudience = true,
+            ValidAudience = "your-firebase-project",
+            ValidateLifetime = true
+        };
+    });
 
 builder.Services.AddControllers();
 var app = builder.Build();
@@ -36,12 +54,14 @@ using (var scope = app.Services.CreateScope())
     {
         db.Listings.AddRange(new List<Listing>
         {
-            new() { Title = "Calculus Textbook", Price = 25.99m, ContactEmail = "user1@umn.edu" },
-            new() { Title = "Bike", Price = 120.50m, ContactEmail = "user2@umn.edu" }
+            new() { Title = "Calculus Textbook", Price = 25.99m, ContactEmail = "user1@umn.edu", OwnerId = "seed-user1" },
+            new() { Title = "Bike", Price = 120.50m, ContactEmail = "user2@umn.edu", OwnerId = "seed-user2" }
         });
         db.SaveChanges();
     }
 }
 
 app.UseIpRateLimiting();
+app.UseAuthentication();
+app.UseAuthorization();
 app.Run();

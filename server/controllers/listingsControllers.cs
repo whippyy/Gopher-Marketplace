@@ -51,12 +51,13 @@ public class ListingsController : ControllerBase
             Description = newListing.Description?.Trim(),
             Price = newListing.Price,
             ContactEmail = newListing.ContactEmail.Trim().ToLower(),
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            OwnerId = User.Identity?.Name
         };
 
         _db.Listings.Add(listing);
         _db.SaveChanges();
-
+        
         // 5. Return 201 Created with the new listing
         return CreatedAtAction(
             actionName: nameof(GetListings),
@@ -73,6 +74,10 @@ public class ListingsController : ControllerBase
         {
             return NotFound();
         }
+
+        // Verify ownership
+        if (listing.OwnerId != User.Identity?.Name)
+            return Forbid(); // HTTP 403
 
         // Validate UMN email if provided
         if (!string.IsNullOrEmpty(updateDto.ContactEmail) &&
@@ -107,6 +112,9 @@ public class ListingsController : ControllerBase
         {
             return NotFound();
         }
+
+        if (listing.OwnerId != User.Identity?.Name)
+            return Forbid();
 
         _db.Listings.Remove(listing);
         _db.SaveChanges();
