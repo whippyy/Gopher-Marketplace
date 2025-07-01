@@ -56,6 +56,8 @@ public class ListingsController : ControllerBase
 
         _db.Listings.Add(listing);
         _db.SaveChanges();
+        
+        OwnerId = User.Identity?.Name
 
         // 5. Return 201 Created with the new listing
         return CreatedAtAction(
@@ -114,7 +116,7 @@ public class ListingsController : ControllerBase
 
         if (listing.OwnerId != User.Identity?.Name)
             return Forbid();
-            
+
         _db.Listings.Remove(listing);
         _db.SaveChanges();
         return NoContent(); // HTTP 204
