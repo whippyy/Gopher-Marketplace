@@ -74,6 +74,10 @@ public class ListingsController : ControllerBase
             return NotFound();
         }
 
+        // Verify ownership
+        if (listing.OwnerId != User.Identity?.Name)
+            return Forbid(); // HTTP 403
+
         // Validate UMN email if provided
         if (!string.IsNullOrEmpty(updateDto.ContactEmail) &&
             !updateDto.ContactEmail.EndsWith("@umn.edu", StringComparison.OrdinalIgnoreCase))
