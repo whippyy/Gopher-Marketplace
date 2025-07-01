@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using GopherMarketplace.Data;
 using GopherMarketplace.Models;
 using AspNetCoreRateLimit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +17,21 @@ builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>()
 // Add SQLite
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Configure JWT Bearer authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = "https://securetoken.google.com/your-firebase-project";
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = "https://securetoken.google.com/your-firebase-project",
+            ValidateAudience = true,
+            ValidAudience = "your-firebase-project",
+            ValidateLifetime = true
+        };
+    });
 
 builder.Services.AddControllers();
 var app = builder.Build();
@@ -44,4 +61,6 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseIpRateLimiting();
+app.UseAuthentication();
+app.UseAuthorization();
 app.Run();
