@@ -53,8 +53,8 @@ using (var scope = app.Services.CreateScope())
     {
         db.Listings.AddRange(new List<Listing>
         {
-            new() { Title = "Calculus Textbook", Price = 25.99m, ContactEmail = "user1@umn.edu" },
-            new() { Title = "Bike", Price = 120.50m, ContactEmail = "user2@umn.edu" }
+            new() { Title = "Calculus Textbook", Price = 25.99m, ContactEmail = "user1@umn.edu", OwnerId = "seed-user1" },
+            new() { Title = "Bike", Price = 120.50m, ContactEmail = "user2@umn.edu", OwnerId = "seed-user2" }
         });
         db.SaveChanges();
     }
