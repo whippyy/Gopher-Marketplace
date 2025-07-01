@@ -112,6 +112,9 @@ public class ListingsController : ControllerBase
             return NotFound();
         }
 
+        if (listing.OwnerId != User.Identity?.Name)
+            return Forbid();
+            
         _db.Listings.Remove(listing);
         _db.SaveChanges();
         return NoContent(); // HTTP 204
