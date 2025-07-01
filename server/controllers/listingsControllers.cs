@@ -51,14 +51,13 @@ public class ListingsController : ControllerBase
             Description = newListing.Description?.Trim(),
             Price = newListing.Price,
             ContactEmail = newListing.ContactEmail.Trim().ToLower(),
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            OwnerId = User.Identity?.Name
         };
 
         _db.Listings.Add(listing);
         _db.SaveChanges();
         
-        OwnerId = User.Identity?.Name
-
         // 5. Return 201 Created with the new listing
         return CreatedAtAction(
             actionName: nameof(GetListings),
