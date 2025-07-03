@@ -17,8 +17,10 @@ export default function Login() {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      console.log('Email login success:', auth.currentUser);
       router.push('/');
     } catch (error: any) {
+      console.error('Email login error:', error);
       alert('Login failed: ' + error.message);
     }
   };
@@ -26,8 +28,10 @@ export default function Login() {
   const handleGoogleLogin = async () => {
     try {
       await signInWithPopup(auth, googleProvider);
+      console.log('Google login success:', auth.currentUser);
       router.push('/');
     } catch (error: any) {
+      console.error('Google login error:', error);
       alert('Google login failed: ' + error.message);
     }
   };
