@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using server.data;
+using GopherMarketplace.Data;
 using server.models;
 using System.Security.Claims;
 using System.Threading.Tasks;
