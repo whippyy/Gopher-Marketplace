@@ -2,12 +2,13 @@ import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyA3NJqx1EfvJ-0SG9TaBhGio4q-mOhbYnI",
+  authDomain: "gopher-marketplace-255c2.firebaseapp.com",
+  projectId: "gopher-marketplace-255c2",
+  storageBucket: "gopher-marketplace-255c2.firebasestorage.app",
+  messagingSenderId: "628980440330",
+  appId: "1:628980440330:web:d2e3ef8257e001dfa12ef3",
+  measurementId: "G-B3YDZ019G8"
 };
 
 const app = initializeApp(firebaseConfig);
