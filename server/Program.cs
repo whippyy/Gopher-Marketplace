@@ -23,13 +23,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.Authority = "https://securetoken.google.com/your-firebase-project";
+        options.Authority = "https://securetoken.google.com/YOUR_FIREBASE_PROJECT_ID";
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
-            ValidIssuer = "https://securetoken.google.com/your-firebase-project",
+            ValidIssuer = "https://securetoken.google.com/YOUR_FIREBASE_PROJECT_ID",
             ValidateAudience = true,
-            ValidAudience = "your-firebase-project",
+            ValidAudience = "YOUR_FIREBASE_PROJECT_ID",
             ValidateLifetime = true
         };
     });

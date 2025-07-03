@@ -1,0 +1,7 @@
+# pack-refs with: peeled fully-peeled sorted 
+bf058a848cf204da185820b468ce971feeb62372 refs/heads/Week1-Core-Listing-Flow
+fa5dd13e73c9f14740e8ac632e9c31ea218f7a3f refs/heads/main
+3b5418d0bd047f65ad7044083f3ff77f436bbcff refs/pull/1/head
+0423cc925fb7f42be00794585c659424cae283c9 refs/pull/2/head
+2a294cb4dd76e9f41729d6ad186f123d905a6eed refs/pull/3/head
+e494c89d956850d4b67088a28b19c7689de1af17 refs/pull/4/head
