@@ -9,10 +9,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log('Auth state changed:', user);
       setUser(user);
     });
     return unsubscribe;
   }, []);
+
+  useEffect(() => {
+    console.log('AuthContext user:', user);
+  }, [user]);
 
   return (
     <AuthContext.Provider value={{ user }}>
