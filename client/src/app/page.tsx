@@ -36,7 +36,7 @@ export default function Home() {
         </h1>
         
         {user ? (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div className="bg-green-50 border border-green-200 rounded-lg p-4">
               <h2 className="text-xl font-semibold text-green-800 mb-2">
                 You are logged in!
@@ -44,15 +44,33 @@ export default function Home() {
               <p className="text-green-700">
                 Email: <span className="font-mono">{user.email}</span>
               </p>
-              <p className="text-green-700">
-                User ID: <span className="font-mono">{user.uid}</span>
-              </p>
+            </div>
+            
+            {/* Quick Actions */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <button
+                onClick={() => router.push('/listings')}
+                className="bg-blue-500 text-white p-4 rounded-lg hover:bg-blue-600 transition-colors text-left"
+              >
+                <div className="text-2xl mb-2">🛍️</div>
+                <h3 className="font-semibold text-lg">Browse Listings</h3>
+                <p className="text-blue-100">Find items from fellow UMN students</p>
+              </button>
+              
+              <button
+                onClick={() => router.push('/listings/create')}
+                className="bg-green-500 text-white p-4 rounded-lg hover:bg-green-600 transition-colors text-left"
+              >
+                <div className="text-2xl mb-2">📝</div>
+                <h3 className="font-semibold text-lg">Create Listing</h3>
+                <p className="text-green-100">Sell your items to the community</p>
+              </button>
             </div>
             
             <div className="flex space-x-4">
               <button
                 onClick={() => router.push('/profile')}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors"
               >
                 View Profile
               </button>

@@ -9,7 +9,7 @@
 ### Week 1: Core Listing Flow
 - [X] Set up Next.js + .NET 8
 - [X] Listing CRUD API (no auth)
-- [ ] Basic listing grid UI
+- [X] Basic listing grid UI
 - [ ] Deploy to Vercel + Azure
 
 ### Week 2: Discoverability
@@ -23,7 +23,7 @@
 - [ ] Share in UMN Facebook groups
 
 ## 🔥 Phase 2: Post-MVP
-- [ ] Firebase Auth (UMN email-only)
+- [X] Firebase Auth (UMN email-only)
 - [ ] Real-time messaging
 - [ ] User profiles
 - [ ] Rating system
