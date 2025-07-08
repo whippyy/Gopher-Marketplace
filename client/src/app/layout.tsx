@@ -1,6 +1,5 @@
 'use client';
 
-import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "../../context/AuthContext";
@@ -15,11 +14,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Gopher Marketplace",
-  description: "A marketplace for UMN students",
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,6 +21,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <title>Gopher Marketplace</title>
+        <meta name="description" content="A marketplace for UMN students" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
