@@ -1,38 +1,57 @@
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../lib/firebase';
 import { useRouter } from 'next/router';
+import { useState } from 'react';
 
 export default function Login() {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    
     const email = (e.currentTarget as HTMLFormElement).email.value;
     const password = (e.currentTarget as HTMLFormElement).password.value;
 
     if (!email.endsWith('@umn.edu')) {
       alert('Only UMN emails allowed!');
+      setLoading(false);
       return;
     }
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      console.log('Email login success:', auth.currentUser);
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      console.log('Email login success:', result.user.email);
       router.push('/');
     } catch (error: any) {
       console.error('Email login error:', error);
       alert('Login failed: ' + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleGoogleLogin = async () => {
+    setLoading(true);
+    
     try {
-      await signInWithPopup(auth, googleProvider);
-      console.log('Google login success:', auth.currentUser);
+      const result = await signInWithPopup(auth, googleProvider);
+      console.log('Google login success:', result.user.email);
+      
+      if (!result.user.email?.endsWith('@umn.edu')) {
+        await auth.signOut();
+        alert('Only UMN emails are allowed for this platform.');
+        setLoading(false);
+        return;
+      }
+      
       router.push('/');
     } catch (error: any) {
       console.error('Google login error:', error);
       alert('Google login failed: ' + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -46,6 +65,7 @@ export default function Login() {
           placeholder="your@umn.edu" 
           className="w-full p-2 border rounded"
           required
+          disabled={loading}
         />
         <input 
           type="password" 
@@ -53,20 +73,23 @@ export default function Login() {
           placeholder="Password" 
           className="w-full p-2 border rounded"
           required
+          disabled={loading}
         />
         <button 
           type="submit" 
-          className="w-full bg-maroon text-white p-2 rounded"
+          className="w-full bg-maroon text-white p-2 rounded disabled:opacity-50"
+          disabled={loading}
         >
-          Sign In
+          {loading ? 'Signing In...' : 'Sign In'}
         </button>
       </form>
       <button 
         onClick={handleGoogleLogin}
-        className="w-full mt-4 bg-white border p-2 rounded flex items-center justify-center"
+        className="w-full mt-4 bg-white border p-2 rounded flex items-center justify-center disabled:opacity-50"
+        disabled={loading}
       >
         <img src="https://www.google.com/favicon.ico" className="w-5 h-5 mr-2" />
-        Sign in with Google
+        {loading ? 'Signing In...' : 'Sign in with Google'}
       </button>
     </div>
   );
