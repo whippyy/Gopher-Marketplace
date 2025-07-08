@@ -60,8 +60,14 @@ public class ListingsController : ControllerBase
             Price = newListing.Price,
             ContactEmail = userEmail,
             CreatedAt = DateTime.UtcNow,
-            OwnerId = userEmail // Always set OwnerId to ContactEmail
+            OwnerId = userEmail
         };
+        // Log the full listing object
+        Console.WriteLine($"[CreateListing] Listing: Title={listing.Title}, Price={listing.Price}, ContactEmail={listing.ContactEmail}, OwnerId={listing.OwnerId}");
+        if (string.IsNullOrEmpty(listing.OwnerId))
+        {
+            return BadRequest("OwnerId is required and could not be set. Please check your form and try again.");
+        }
 
         _db.Listings.Add(listing);
         _db.SaveChanges();

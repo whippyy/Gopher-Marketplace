@@ -199,7 +199,7 @@ export default function CreateListingPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 bg-maroon text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 bg-green-400 text-white py-2 px-4 rounded-lg hover:bg-green-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? 'Creating...' : 'Create Listing'}
             </button>
