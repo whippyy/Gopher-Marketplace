@@ -44,6 +44,9 @@ public class ListingsController : ControllerBase
             return BadRequest("Title is required.");
         }
 
+        // Debug log for incoming DTO
+        Console.WriteLine($"[CreateListing] OwnerId: {newListing.OwnerId}, Title: {newListing.Title}");
+
         // 4. Create the listing
         var listing = new Listing
         {
