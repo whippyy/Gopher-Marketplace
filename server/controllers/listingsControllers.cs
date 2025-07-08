@@ -44,16 +44,30 @@ public class ListingsController : ControllerBase
             return BadRequest("Title is required.");
         }
 
+        // Debug log for incoming DTO
+        Console.WriteLine($"[CreateListing] OwnerId: {newListing.OwnerId}, Title: {newListing.Title}");
+
         // 4. Create the listing
+        var userEmail = newListing.ContactEmail?.Trim().ToLower();
+        if (string.IsNullOrEmpty(userEmail))
+        {
+            return BadRequest("Contact email is required and must be a UMN email.");
+        }
         var listing = new Listing
         {
             Title = newListing.Title.Trim(),
             Description = newListing.Description?.Trim(),
             Price = newListing.Price,
-            ContactEmail = newListing.ContactEmail.Trim().ToLower(),
+            ContactEmail = userEmail,
             CreatedAt = DateTime.UtcNow,
-            OwnerId = User.Identity?.Name
+            OwnerId = userEmail
         };
+        // Log the full listing object
+        Console.WriteLine($"[CreateListing] Listing: Title={listing.Title}, Price={listing.Price}, ContactEmail={listing.ContactEmail}, OwnerId={listing.OwnerId}");
+        if (string.IsNullOrEmpty(listing.OwnerId))
+        {
+            return BadRequest("OwnerId is required and could not be set. Please check your form and try again.");
+        }
 
         _db.Listings.Add(listing);
         _db.SaveChanges();

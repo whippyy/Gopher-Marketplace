@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../../../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 
@@ -22,6 +22,15 @@ export default function CreateListingPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (user?.email) {
+      setFormData(prev => ({
+        ...prev,
+        contactEmail: user.email || '', // Ensure string, never null
+      }));
+    }
+  }, [user]);
 
   if (loading) {
     return (
@@ -81,6 +90,7 @@ export default function CreateListingPage() {
           description: formData.description.trim(),
           price: parseFloat(formData.price),
           contactEmail: formData.contactEmail.trim().toLowerCase(),
+          OwnerId: user.email, // <-- PascalCase to match backend
         }),
       });
 
@@ -130,7 +140,7 @@ export default function CreateListingPage() {
               value={formData.title}
               onChange={handleInputChange}
               placeholder="e.g., Calculus Textbook, Bike, Coffee Table"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
               required
             />
           </div>
@@ -147,7 +157,7 @@ export default function CreateListingPage() {
               onChange={handleInputChange}
               placeholder="Describe your item, condition, why you're selling, etc."
               rows={4}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
             />
           </div>
 
@@ -167,7 +177,7 @@ export default function CreateListingPage() {
                 placeholder="0.00"
                 min="0.01"
                 step="0.01"
-                className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                 required
               />
             </div>
@@ -185,7 +195,7 @@ export default function CreateListingPage() {
               value={formData.contactEmail}
               onChange={handleInputChange}
               placeholder="your@umn.edu"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
               required
             />
             <p className="text-sm text-gray-500 mt-1">
@@ -198,7 +208,7 @@ export default function CreateListingPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 bg-maroon text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 bg-green-400 text-white py-2 px-4 rounded-lg hover:bg-green-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? 'Creating...' : 'Create Listing'}
             </button>
