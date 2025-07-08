@@ -81,6 +81,7 @@ export default function CreateListingPage() {
           description: formData.description.trim(),
           price: parseFloat(formData.price),
           contactEmail: formData.contactEmail.trim().toLowerCase(),
+          OwnerId: user.email, // <-- PascalCase to match backend
         }),
       });
 
