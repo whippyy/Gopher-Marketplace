@@ -131,7 +131,7 @@ export default function CreateListingPage() {
               value={formData.title}
               onChange={handleInputChange}
               placeholder="e.g., Calculus Textbook, Bike, Coffee Table"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
               required
             />
           </div>
@@ -148,7 +148,7 @@ export default function CreateListingPage() {
               onChange={handleInputChange}
               placeholder="Describe your item, condition, why you're selling, etc."
               rows={4}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
             />
           </div>
 
@@ -168,7 +168,7 @@ export default function CreateListingPage() {
                 placeholder="0.00"
                 min="0.01"
                 step="0.01"
-                className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                 required
               />
             </div>
@@ -186,7 +186,7 @@ export default function CreateListingPage() {
               value={formData.contactEmail}
               onChange={handleInputChange}
               placeholder="your@umn.edu"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
               required
             />
             <p className="text-sm text-gray-500 mt-1">
