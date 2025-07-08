@@ -27,7 +27,7 @@ export default function CreateListingPage() {
     if (user?.email) {
       setFormData(prev => ({
         ...prev,
-        contactEmail: user.email,
+        contactEmail: user.email || '', // Ensure string, never null
       }));
     }
   }, [user]);
