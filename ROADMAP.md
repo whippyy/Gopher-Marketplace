@@ -23,7 +23,7 @@
 - [ ] Share in UMN Facebook groups
 
 ## 🔥 Phase 2: Post-MVP
-- [ ] Firebase Auth (UMN email-only)
+- [X] Firebase Auth (UMN email-only)
 - [ ] Real-time messaging
 - [ ] User profiles
 - [ ] Rating system
