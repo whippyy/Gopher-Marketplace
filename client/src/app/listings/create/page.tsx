@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../../../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 
@@ -22,6 +22,15 @@ export default function CreateListingPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (user?.email) {
+      setFormData(prev => ({
+        ...prev,
+        contactEmail: user.email,
+      }));
+    }
+  }, [user]);
 
   if (loading) {
     return (
