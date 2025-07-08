@@ -49,6 +49,10 @@ public class ListingsController : ControllerBase
 
         // 4. Create the listing
         var userEmail = newListing.ContactEmail?.Trim().ToLower();
+        if (string.IsNullOrEmpty(userEmail))
+        {
+            return BadRequest("Contact email is required and must be a UMN email.");
+        }
         var listing = new Listing
         {
             Title = newListing.Title.Trim(),
