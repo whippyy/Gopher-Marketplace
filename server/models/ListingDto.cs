@@ -6,4 +6,5 @@ public class ListingDto
     public string? Description { get; set; }
     public decimal Price { get; set; }
     public required string ContactEmail { get; set; }
+    public string? OwnerId { get; set; }
 }

@@ -52,7 +52,7 @@ public class ListingsController : ControllerBase
             Price = newListing.Price,
             ContactEmail = newListing.ContactEmail.Trim().ToLower(),
             CreatedAt = DateTime.UtcNow,
-            OwnerId = User.Identity?.Name
+            OwnerId = newListing.OwnerId ?? User.Identity?.Name // Use provided OwnerId or fallback
         };
 
         _db.Listings.Add(listing);
