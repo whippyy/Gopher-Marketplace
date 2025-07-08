@@ -48,14 +48,15 @@ public class ListingsController : ControllerBase
         Console.WriteLine($"[CreateListing] OwnerId: {newListing.OwnerId}, Title: {newListing.Title}");
 
         // 4. Create the listing
+        var userEmail = newListing.ContactEmail?.Trim().ToLower();
         var listing = new Listing
         {
             Title = newListing.Title.Trim(),
             Description = newListing.Description?.Trim(),
             Price = newListing.Price,
-            ContactEmail = newListing.ContactEmail.Trim().ToLower(),
+            ContactEmail = userEmail,
             CreatedAt = DateTime.UtcNow,
-            OwnerId = newListing.OwnerId ?? User.Identity?.Name // Use provided OwnerId or fallback
+            OwnerId = userEmail // Always set OwnerId to ContactEmail
         };
 
         _db.Listings.Add(listing);
