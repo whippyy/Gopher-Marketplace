@@ -2,7 +2,7 @@
 
 import { useContext, useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { AuthContext } from '../../../../context/AuthContext';
+import { AuthContext } from '../../../../../context/AuthContext';
 
 interface Listing {
   id: number;
