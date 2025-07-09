@@ -95,14 +95,7 @@ public class ListingsController : ControllerBase
         if (!string.Equals(listing.OwnerId, updateDto.ContactEmail?.Trim().ToLower(), StringComparison.OrdinalIgnoreCase))
             return Forbid(); // HTTP 403
 
-        // Validate UMN email if provided
-        if (!string.IsNullOrEmpty(updateDto.ContactEmail) &&
-            !updateDto.ContactEmail.EndsWith("@umn.edu", StringComparison.OrdinalIgnoreCase))
-        {
-            return BadRequest("Only @umn.edu emails allowed.");
-        }
-
-        // Apply updates (only modify provided fields)
+        // Apply updates (only modify provided fields, do not update ContactEmail)
         if (!string.IsNullOrWhiteSpace(updateDto.Title))
             listing.Title = updateDto.Title.Trim();
 
@@ -112,8 +105,7 @@ public class ListingsController : ControllerBase
         if (updateDto.Price > 0)
             listing.Price = updateDto.Price;
 
-        if (!string.IsNullOrEmpty(updateDto.ContactEmail))
-            listing.ContactEmail = updateDto.ContactEmail.Trim().ToLower();
+        // Do NOT update ContactEmail
 
         _db.SaveChanges();
         return Ok(listing);

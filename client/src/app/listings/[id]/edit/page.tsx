@@ -41,6 +41,15 @@ export default function EditListingPage() {
     }
   }, [id, loading, user, router]);
 
+  useEffect(() => {
+    if (user?.email) {
+      setFormData(prev => ({
+        ...prev,
+        contactEmail: user.email,
+      }));
+    }
+  }, [user]);
+
   const fetchListing = async () => {
     setIsLoading(true);
     setError('');
@@ -106,7 +115,7 @@ export default function EditListingPage() {
           title: formData.title.trim(),
           description: formData.description.trim(),
           price: parseFloat(formData.price),
-          contactEmail: formData.contactEmail.trim().toLowerCase(),
+          contactEmail: user?.email || '', // Always use logged-in user's email
         }),
       });
       if (!response.ok) {
@@ -220,9 +229,9 @@ export default function EditListingPage() {
               type="email"
               id="contactEmail"
               name="contactEmail"
-              value={formData.contactEmail}
-              onChange={handleInputChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+              value={user?.email || ''}
+              readOnly
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-gray-100 cursor-not-allowed"
               required
             />
             <p className="text-sm text-gray-500 mt-1">
