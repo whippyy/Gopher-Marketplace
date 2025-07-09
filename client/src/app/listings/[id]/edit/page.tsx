@@ -1,27 +1,45 @@
 'use client';
 
-import { useContext, useState, useEffect } from 'react';
-import { AuthContext } from '../../../../context/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useContext, useEffect, useState } from 'react';
+import { useRouter, useParams } from 'next/navigation';
+import { AuthContext } from '../../../../../context/AuthContext';
 
-interface ListingForm {
+interface Listing {
+  id: number;
   title: string;
-  description: string;
-  price: string;
+  description?: string;
+  price: number;
   contactEmail: string;
+  createdAt: string;
+  ownerId: string;
 }
 
-export default function CreateListingPage() {
+export default function EditListingPage() {
   const { user, loading } = useContext(AuthContext);
   const router = useRouter();
-  const [formData, setFormData] = useState<ListingForm>({
+  const params = useParams();
+  const id = params?.id;
+
+  const [listing, setListing] = useState<Listing | null>(null);
+  const [formData, setFormData] = useState({
     title: '',
     description: '',
     price: '',
-    contactEmail: user?.email || '',
+    contactEmail: '',
   });
+  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+      return;
+    }
+    if (id) {
+      fetchListing();
+    }
+  }, [id, loading, user, router]);
 
   useEffect(() => {
     if (user?.email) {
@@ -32,18 +50,31 @@ export default function CreateListingPage() {
     }
   }, [user]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
-  }
+  const fetchListing = async () => {
+    setIsLoading(true);
+    setError('');
+    try {
+      const response = await fetch(`http://localhost:5192/api/listings/${id}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch listing');
+      }
+      const data = await response.json();
+      setListing(data);
+      setFormData({
+        title: data.title || '',
+        description: data.description || '',
+        price: data.price?.toString() || '',
+        contactEmail: data.contactEmail || '',
+      });
+    } catch (err: any) {
+      setError('Could not load listing.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  if (!user) {
-    router.push('/login');
-    return null;
-  }
+  // Only allow the owner to edit
+  const isOwner = user && listing && user.email === listing.ownerId;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -72,16 +103,11 @@ export default function CreateListingPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
-    if (!validateForm()) {
-      return;
-    }
-
+    if (!validateForm()) return;
     setIsSubmitting(true);
-
     try {
-      const response = await fetch('http://localhost:5192/api/listings', {
-        method: 'POST',
+      const response = await fetch(`http://localhost:5192/api/listings/${id}`, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -90,45 +116,65 @@ export default function CreateListingPage() {
           description: formData.description.trim(),
           price: parseFloat(formData.price),
           contactEmail: user?.email || '', // Always use logged-in user's email
-          OwnerId: user.email, // <-- PascalCase to match backend
         }),
       });
-
       if (!response.ok) {
         const errorData = await response.text();
-        throw new Error(errorData || 'Failed to create listing');
+        throw new Error(errorData || 'Failed to update listing');
       }
-
-      const newListing = await response.json();
       router.push('/listings');
     } catch (err: any) {
-      setError(err.message || 'Failed to create listing. Please try again.');
+      setError(err.message || 'Failed to update listing. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  if (loading || isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!listing) {
+    return (
+      <div className="max-w-2xl mx-auto p-6">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p className="text-red-700">Listing not found.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isOwner) {
+    return (
+      <div className="max-w-2xl mx-auto p-6">
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <p className="text-yellow-700">You do not have permission to edit this listing.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-2xl mx-auto p-6">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-2">
-          Create New Listing
+          Edit Listing
         </h1>
         <p className="text-gray-600">
-          Sell your items to fellow UMN students
+          Update your listing details below
         </p>
       </div>
-
       <div className="bg-white rounded-lg shadow-sm border p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Error Message */}
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <p className="text-red-700">{error}</p>
             </div>
           )}
-
-          {/* Title */}
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
               Title *
@@ -139,13 +185,10 @@ export default function CreateListingPage() {
               name="title"
               value={formData.title}
               onChange={handleInputChange}
-              placeholder="e.g., Calculus Textbook, Bike, Coffee Table"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
               required
             />
           </div>
-
-          {/* Description */}
           <div>
             <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
               Description
@@ -155,13 +198,10 @@ export default function CreateListingPage() {
               name="description"
               value={formData.description}
               onChange={handleInputChange}
-              placeholder="Describe your item, condition, why you're selling, etc."
-              rows={4}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+              rows={4}
             />
           </div>
-
-          {/* Price */}
           <div>
             <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-2">
               Price *
@@ -174,7 +214,6 @@ export default function CreateListingPage() {
                 name="price"
                 value={formData.price}
                 onChange={handleInputChange}
-                placeholder="0.00"
                 min="0.01"
                 step="0.01"
                 className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
@@ -182,8 +221,6 @@ export default function CreateListingPage() {
               />
             </div>
           </div>
-
-          {/* Contact Email */}
           <div>
             <label htmlFor="contactEmail" className="block text-sm font-medium text-gray-700 mb-2">
               Contact Email *
@@ -201,15 +238,13 @@ export default function CreateListingPage() {
               Only UMN email addresses are allowed
             </p>
           </div>
-
-          {/* Submit Buttons */}
           <div className="flex gap-4 pt-4">
             <button
               type="submit"
               disabled={isSubmitting}
               className="flex-1 bg-green-400 text-white py-2 px-4 rounded-lg hover:bg-green-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? 'Creating...' : 'Create Listing'}
+              {isSubmitting ? 'Saving...' : 'Save Changes'}
             </button>
             <button
               type="button"
@@ -220,18 +255,6 @@ export default function CreateListingPage() {
             </button>
           </div>
         </form>
-      </div>
-
-      {/* Tips */}
-      <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h3 className="font-semibold text-blue-800 mb-2">Tips for a great listing:</h3>
-        <ul className="text-sm text-blue-700 space-y-1">
-          <li>• Use a clear, descriptive title</li>
-          <li>• Include details about condition and any defects</li>
-          <li>• Mention why you're selling (graduating, moving, etc.)</li>
-          <li>• Set a fair price - check similar items online</li>
-          <li>• Respond quickly to interested buyers</li>
-        </ul>
       </div>
     </div>
   );
