@@ -89,6 +89,8 @@ public class ListingsController : ControllerBase
             return NotFound();
         }
 
+        // Debug log for ownership check
+        Console.WriteLine($"[UpdateListing] OwnerId in DB: {listing.OwnerId}, ContactEmail in DTO: {updateDto.ContactEmail?.Trim().ToLower()}");
         // Verify ownership (dev mode: allow if contact email matches owner)
         if (!string.Equals(listing.OwnerId, updateDto.ContactEmail?.Trim().ToLower(), StringComparison.OrdinalIgnoreCase))
             return Forbid(); // HTTP 403
