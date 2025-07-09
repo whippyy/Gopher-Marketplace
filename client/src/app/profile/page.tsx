@@ -43,6 +43,19 @@ export default function ProfilePage() {
     }
   };
 
+  const handleDelete = async (id: number) => {
+    if (!window.confirm('Are you sure you want to delete this listing? This action cannot be undone.')) return;
+    try {
+      const response = await fetch(`http://localhost:5192/api/listings/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to delete listing');
+      setMyListings(prev => prev.filter(l => l.id !== id));
+    } catch (err) {
+      alert('Failed to delete listing. Please try again.');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -116,7 +129,12 @@ export default function ProfilePage() {
                   >
                     Edit
                   </button>
-                  {/* Delete button can be added here later */}
+                  <button
+                    onClick={() => handleDelete(listing.id)}
+                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors text-sm"
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             ))}
