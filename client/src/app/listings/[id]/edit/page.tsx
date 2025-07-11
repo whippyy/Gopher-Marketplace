@@ -55,7 +55,7 @@ export default function EditListingPage() {
     setIsLoading(true);
     setError('');
     try {
-      const response = await fetch(`http://localhost:5192/api/listings/${id}`);
+      const response = await authenticatedFetch(`http://localhost:5192/api/listings/${id}`);
       if (!response.ok) {
         throw new Error('Failed to fetch listing');
       }
@@ -107,7 +107,7 @@ export default function EditListingPage() {
     if (!validateForm()) return;
     setIsSubmitting(true);
     try {
-      const response = await fetch(`http://localhost:5192/api/listings/${id}`, {
+      const response = await authenticatedFetch(`http://localhost:5192/api/listings/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
