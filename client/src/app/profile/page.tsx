@@ -3,6 +3,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../../context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { authenticatedFetch } from '../../../lib/api';
 
 interface Listing {
   id: number;
