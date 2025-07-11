@@ -2,8 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using GopherMarketplace.Data;
 using GopherMarketplace.Models;
 using AspNetCoreRateLimit;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+using GopherMarketplace.Services;
+using GopherMarketplace.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,20 +30,8 @@ builder.Services.AddSingleton<AspNetCoreRateLimit.IProcessingStrategy, AspNetCor
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Configure JWT Bearer authentication
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.Authority = "https://securetoken.google.com/YOUR_FIREBASE_PROJECT_ID";
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidIssuer = "https://securetoken.google.com/YOUR_FIREBASE_PROJECT_ID",
-            ValidateAudience = true,
-            ValidAudience = "YOUR_FIREBASE_PROJECT_ID",
-            ValidateLifetime = true
-        };
-    });
+// Register Firebase service
+builder.Services.AddSingleton<IFirebaseService, FirebaseService>();
 
 builder.Services.AddControllers();
 var app = builder.Build();
@@ -77,6 +65,7 @@ using (var scope = app.Services.CreateScope())
 
 app.UseCors("AllowFrontend");
 app.UseIpRateLimiting();
+app.UseFirebaseAuth();
 app.UseAuthentication();
 app.UseAuthorization();
 app.Run();

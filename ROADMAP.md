@@ -13,17 +13,17 @@
 - [ ] Deploy to Vercel + Azure
 
 ### Week 2: Discoverability
-- [ ] Client-side search/filters
-- [ ] Contact seller (email/Discord)
+- [X] Client-side search/filters
+- [X] Contact seller (email)
 - [ ] Manual admin moderation (Supabase console)
 
 ### Week 3: Launch Prep
-- [ ] UMN email validation (regex)
-- [ ] Seed 20 test listings
+- [X] UMN email validation (Firebase Auth)
+- [X] Seed test listings
 - [ ] Share in UMN Facebook groups
 
 ## 🔥 Phase 2: Post-MVP
 - [X] Firebase Auth (UMN email-only)
+- [X] User profiles
 - [ ] Real-time messaging
-- [ ] User profiles
 - [ ] Rating system

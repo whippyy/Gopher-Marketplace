@@ -3,6 +3,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../../context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { authenticatedFetch } from '../../../lib/api';
 
 interface Listing {
   id: number;
@@ -36,7 +37,7 @@ export default function ListingsPage() {
   const fetchListings = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('http://localhost:5192/api/listings');
+      const response = await authenticatedFetch('http://localhost:5192/api/listings');
       if (!response.ok) {
         throw new Error('Failed to fetch listings');
       }

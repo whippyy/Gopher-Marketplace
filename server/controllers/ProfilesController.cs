@@ -1,15 +1,11 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GopherMarketplace.Data;
-using server.models;
-using System.Security.Claims;
-using System.Threading.Tasks;
+using GopherMarketplace.Models;
 
-namespace server.controllers
+namespace GopherMarketplace.Controllers
 {
     [ApiController]
     [Route("api/profiles")]
-    [Authorize]
     public class ProfilesController : ControllerBase
     {
         private readonly AppDbContext _db;
@@ -19,8 +15,13 @@ namespace server.controllers
         [HttpGet("me")]
         public async Task<ActionResult<UserProfile>> GetMyProfile()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var profile = await _db.UserProfiles.FindAsync(userId);
+            var userEmail = HttpContext.Items["UserEmail"]?.ToString();
+            if (string.IsNullOrEmpty(userEmail))
+            {
+                return Unauthorized("Authentication required");
+            }
+
+            var profile = await _db.UserProfiles.FindAsync(userEmail);
             if (profile == null) return NotFound();
             return Ok(profile);
         }
@@ -28,8 +29,13 @@ namespace server.controllers
         [HttpPut("me")]
         public async Task<ActionResult<UserProfile>> UpdateProfile([FromBody] UserProfile update)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var profile = await _db.UserProfiles.FindAsync(userId);
+            var userEmail = HttpContext.Items["UserEmail"]?.ToString();
+            if (string.IsNullOrEmpty(userEmail))
+            {
+                return Unauthorized("Authentication required");
+            }
+
+            var profile = await _db.UserProfiles.FindAsync(userEmail);
             if (profile == null) return NotFound();
             profile.DisplayName = update.DisplayName?.Trim();
             profile.PhoneNumber = update.PhoneNumber?.Trim();
@@ -40,14 +46,19 @@ namespace server.controllers
         [HttpPost("me")]
         public async Task<ActionResult<UserProfile>> CreateProfile([FromBody] UserProfile newProfile)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userId == null) return Unauthorized();
-            var exists = await _db.UserProfiles.FindAsync(userId);
+            var userEmail = HttpContext.Items["UserEmail"]?.ToString();
+            if (string.IsNullOrEmpty(userEmail))
+            {
+                return Unauthorized("Authentication required");
+            }
+
+            var exists = await _db.UserProfiles.FindAsync(userEmail);
             if (exists != null) return Conflict();
+            
             var profile = new UserProfile
             {
-                Id = userId,
-                Email = newProfile.Email,
+                Id = userEmail,
+                Email = userEmail,
                 DisplayName = newProfile.DisplayName,
                 PhoneNumber = newProfile.PhoneNumber
             };

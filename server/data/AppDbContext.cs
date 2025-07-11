@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using GopherMarketplace.Models;
-using server.models;
 
 namespace GopherMarketplace.Data;
 
