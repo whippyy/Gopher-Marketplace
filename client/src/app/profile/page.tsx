@@ -32,7 +32,7 @@ export default function ProfilePage() {
     setIsLoadingListings(true);
     setError('');
     try {
-      const response = await fetch('http://localhost:5192/api/listings');
+      const response = await authenticatedFetch('http://localhost:5192/api/listings');
       if (!response.ok) throw new Error('Failed to fetch listings');
       const data = await response.json();
       // Only show listings owned by the user
@@ -47,7 +47,7 @@ export default function ProfilePage() {
   const handleDelete = async (id: number) => {
     if (!window.confirm('Are you sure you want to delete this listing? This action cannot be undone.')) return;
     try {
-      const response = await fetch(`http://localhost:5192/api/listings/${id}`, {
+      const response = await authenticatedFetch(`http://localhost:5192/api/listings/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error('Failed to delete listing');
