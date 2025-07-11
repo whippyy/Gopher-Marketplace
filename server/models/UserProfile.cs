@@ -1,6 +1,6 @@
 using System;
 
-namespace server.models
+namespace GopherMarketplace.Models
 {
     public class UserProfile
     {
