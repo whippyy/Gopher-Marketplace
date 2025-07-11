@@ -26,8 +26,15 @@ public class ListingsController : ControllerBase
     [HttpPost]
     public ActionResult<Listing> CreateListing([FromBody] ListingDto newListing)
     {
+        // Get authenticated user email from middleware
+        var userEmail = HttpContext.Items["UserEmail"]?.ToString();
+        if (string.IsNullOrEmpty(userEmail))
+        {
+            return Unauthorized("Authentication required");
+        }
+
         // 1. Validate UMN email
-        if (!newListing.ContactEmail.EndsWith("@umn.edu", StringComparison.OrdinalIgnoreCase))
+        if (!userEmail.EndsWith("@umn.edu", StringComparison.OrdinalIgnoreCase))
         {
             return BadRequest("Only @umn.edu emails are allowed.");
         }
@@ -44,15 +51,7 @@ public class ListingsController : ControllerBase
             return BadRequest("Title is required.");
         }
 
-        // Debug log for incoming DTO
-        Console.WriteLine($"[CreateListing] OwnerId: {newListing.OwnerId}, Title: {newListing.Title}");
-
         // 4. Create the listing
-        var userEmail = newListing.ContactEmail?.Trim().ToLower();
-        if (string.IsNullOrEmpty(userEmail))
-        {
-            return BadRequest("Contact email is required and must be a UMN email.");
-        }
         var listing = new Listing
         {
             Title = newListing.Title.Trim(),
@@ -62,12 +61,6 @@ public class ListingsController : ControllerBase
             CreatedAt = DateTime.UtcNow,
             OwnerId = userEmail
         };
-        // Log the full listing object
-        Console.WriteLine($"[CreateListing] Listing: Title={listing.Title}, Price={listing.Price}, ContactEmail={listing.ContactEmail}, OwnerId={listing.OwnerId}");
-        if (string.IsNullOrEmpty(listing.OwnerId))
-        {
-            return BadRequest("OwnerId is required and could not be set. Please check your form and try again.");
-        }
 
         _db.Listings.Add(listing);
         _db.SaveChanges();
@@ -82,6 +75,13 @@ public class ListingsController : ControllerBase
     [HttpPatch("{id}")]
     public ActionResult<Listing> UpdateListing(int id, [FromBody] ListingDto updateDto)
     {
+        // Get authenticated user email from middleware
+        var userEmail = HttpContext.Items["UserEmail"]?.ToString();
+        if (string.IsNullOrEmpty(userEmail))
+        {
+            return Unauthorized("Authentication required");
+        }
+
         // Find the listing
         var listing = _db.Listings.Find(id);
         if (listing == null)
@@ -89,13 +89,11 @@ public class ListingsController : ControllerBase
             return NotFound();
         }
 
-        // Debug log for ownership check
-        Console.WriteLine($"[UpdateListing] OwnerId in DB: {listing.OwnerId}, ContactEmail in DTO: {updateDto.ContactEmail?.Trim().ToLower()}");
-        // Verify ownership (dev mode: allow if contact email matches owner)
-        if (!string.Equals(listing.OwnerId, updateDto.ContactEmail?.Trim().ToLower(), StringComparison.OrdinalIgnoreCase))
+        // Verify ownership
+        if (!string.Equals(listing.OwnerId, userEmail, StringComparison.OrdinalIgnoreCase))
             return Forbid(); // HTTP 403
 
-        // Apply updates (only modify provided fields, do not update ContactEmail)
+        // Apply updates (only modify provided fields)
         if (!string.IsNullOrWhiteSpace(updateDto.Title))
             listing.Title = updateDto.Title.Trim();
 
@@ -105,8 +103,6 @@ public class ListingsController : ControllerBase
         if (updateDto.Price > 0)
             listing.Price = updateDto.Price;
 
-        // Do NOT update ContactEmail
-
         _db.SaveChanges();
         return Ok(listing);
     }
@@ -115,13 +111,21 @@ public class ListingsController : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult DeleteListing(int id)
     {
+        // Get authenticated user email from middleware
+        var userEmail = HttpContext.Items["UserEmail"]?.ToString();
+        if (string.IsNullOrEmpty(userEmail))
+        {
+            return Unauthorized("Authentication required");
+        }
+
         var listing = _db.Listings.Find(id);
         if (listing == null)
         {
             return NotFound();
         }
 
-        if (listing.OwnerId != User.Identity?.Name)
+        // Verify ownership
+        if (!string.Equals(listing.OwnerId, userEmail, StringComparison.OrdinalIgnoreCase))
             return Forbid();
 
         _db.Listings.Remove(listing);
@@ -135,5 +139,24 @@ public class ListingsController : ControllerBase
     {
         var listing = _db.Listings.Find(id);
         return listing != null ? Ok(listing) : NotFound();
+    }
+
+    // GET: api/listings/my
+    [HttpGet("my")]
+    public ActionResult<List<Listing>> GetMyListings()
+    {
+        // Get authenticated user email from middleware
+        var userEmail = HttpContext.Items["UserEmail"]?.ToString();
+        if (string.IsNullOrEmpty(userEmail))
+        {
+            return Unauthorized("Authentication required");
+        }
+
+        var listings = _db.Listings
+            .Where(l => l.OwnerId == userEmail)
+            .OrderByDescending(l => l.CreatedAt)
+            .ToList();
+
+        return Ok(listings);
     }
 }
