@@ -3,6 +3,7 @@
 import { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../../../../context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { authenticatedFetch } from '../../../../lib/api';
 
 interface ListingForm {
   title: string;
@@ -80,7 +81,7 @@ export default function CreateListingPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('http://localhost:5192/api/listings', {
+      const response = await authenticatedFetch('http://localhost:5192/api/listings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
