@@ -31,7 +31,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Register Firebase service
-builder.Services.AddScoped<IFirebaseService, FirebaseService>();
+builder.Services.AddSingleton<IFirebaseService, FirebaseService>();
 
 builder.Services.AddControllers();
 var app = builder.Build();
