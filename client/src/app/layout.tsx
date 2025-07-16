@@ -26,7 +26,7 @@ export default function RootLayout({
         <meta name="description" content="A marketplace for UMN students" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#F7F6F1]`}
       >
         {/* Navigation Bar */}
         <nav className="bg-white border-b border-gray-200 shadow-sm mb-8">
