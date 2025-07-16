@@ -120,7 +120,7 @@ export default function CreateListingPage() {
         </p>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border p-6">
+      <div className="bg-gray-50 rounded-lg shadow-md border p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Error Message */}
           {error && (

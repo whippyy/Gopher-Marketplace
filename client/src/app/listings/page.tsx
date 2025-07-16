@@ -117,7 +117,7 @@ export default function ListingsPage() {
       </div>
 
       {/* Search and Filter Bar */}
-      <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
+      <div className="bg-gray-50 rounded-lg shadow-md border p-4 mb-6">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <input
@@ -192,7 +192,7 @@ export default function ListingsPage() {
               {filteredListings.map((listing) => (
                 <div
                   key={listing.id}
-                  className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow duration-200 overflow-hidden"
+                  className="bg-gray-50 rounded-lg shadow-md border hover:shadow-lg transition-shadow duration-200 overflow-hidden"
                 >
                   <div className="p-4">
                     <div className="flex justify-between items-start mb-2">
