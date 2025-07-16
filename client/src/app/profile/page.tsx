@@ -84,7 +84,7 @@ export default function ProfilePage() {
         <h1 className="text-3xl font-bold text-gray-800 mb-2">Your Profile</h1>
         <p className="text-gray-600">View your UMN account details</p>
       </div>
-      <div className="bg-white rounded-lg shadow-sm border p-6 space-y-6 mb-8">
+      <div className="bg-gray-50 rounded-lg shadow-md border p-6 space-y-6 mb-8">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Display Name</label>
           <div className="text-lg font-semibold text-gray-900">
