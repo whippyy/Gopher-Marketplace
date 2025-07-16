@@ -30,7 +30,7 @@ export default function Home() {
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <div className="bg-white shadow-lg rounded-lg p-6">
+      <div className="bg-gray-50 shadow-md rounded-lg p-6">
         <h1 className="text-3xl font-bold text-gray-800 mb-6">
           Welcome to Gopher Marketplace
         </h1>
