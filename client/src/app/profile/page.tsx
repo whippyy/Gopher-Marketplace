@@ -22,12 +22,6 @@ export default function ProfilePage() {
   const [isLoadingListings, setIsLoadingListings] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (user?.email) {
-      fetchMyListings();
-    }
-  }, [user, fetchMyListings]);
-
   const fetchMyListings = async () => {
     setIsLoadingListings(true);
     setError('');
@@ -43,6 +37,12 @@ export default function ProfilePage() {
       setIsLoadingListings(false);
     }
   };
+
+  useEffect(() => {
+    if (user?.email) {
+      fetchMyListings();
+    }
+  }, [user, fetchMyListings]);
 
   const handleDelete = async (id: number) => {
     if (!window.confirm('Are you sure you want to delete this listing? This action cannot be undone.')) return;

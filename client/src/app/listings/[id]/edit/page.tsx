@@ -32,25 +32,6 @@ export default function EditListingPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/login');
-      return;
-    }
-    if (id) {
-      fetchListing();
-    }
-  }, [id, loading, user, router, fetchListing]);
-
-  useEffect(() => {
-    if (user?.email) {
-      setFormData(prev => ({
-        ...prev,
-        contactEmail: user.email || '', // Ensure string, never null
-      }));
-    }
-  }, [user]);
-
   const fetchListing = async () => {
     setIsLoading(true);
     setError('');
@@ -77,6 +58,25 @@ export default function EditListingPage() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+      return;
+    }
+    if (id) {
+      fetchListing();
+    }
+  }, [id, loading, user, router, fetchListing]);
+
+  useEffect(() => {
+    if (user?.email) {
+      setFormData(prev => ({
+        ...prev,
+        contactEmail: user.email || '', // Ensure string, never null
+      }));
+    }
+  }, [user]);
 
   // Only allow the owner to edit
   const isOwner = user && listing && user.email === listing.ownerId;
