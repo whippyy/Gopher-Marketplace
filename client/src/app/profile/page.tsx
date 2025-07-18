@@ -26,7 +26,7 @@ export default function ProfilePage() {
     if (user?.email) {
       fetchMyListings();
     }
-  }, [user]);
+  }, [user, fetchMyListings]);
 
   const fetchMyListings = async () => {
     setIsLoadingListings(true);
@@ -37,7 +37,7 @@ export default function ProfilePage() {
       const data = await response.json();
       // Only show listings owned by the user
       setMyListings(data.filter((l: Listing) => l.ownerId === user?.email));
-    } catch (err: unknown) {
+    } catch {
       setError('Could not load your listings.');
     } finally {
       setIsLoadingListings(false);
@@ -52,7 +52,7 @@ export default function ProfilePage() {
       });
       if (!response.ok) throw new Error('Failed to delete listing');
       setMyListings(prev => prev.filter(l => l.id !== id));
-    } catch (err) {
+    } catch {
       alert('Failed to delete listing. Please try again.');
     }
   };

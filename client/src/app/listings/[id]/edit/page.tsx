@@ -40,7 +40,7 @@ export default function EditListingPage() {
     if (id) {
       fetchListing();
     }
-  }, [id, loading, user, router]);
+  }, [id, loading, user, router, fetchListing]);
 
   useEffect(() => {
     if (user?.email) {

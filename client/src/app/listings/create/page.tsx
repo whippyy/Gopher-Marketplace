@@ -232,7 +232,7 @@ export default function CreateListingPage() {
         <ul className="text-sm text-blue-700 space-y-1">
           <li>• Use a clear, descriptive title</li>
           <li>• Include details about condition and any defects</li>
-          <li>• Mention why you're selling (graduating, moving, etc.)</li>
+          <li>• Mention why you&apos;re selling (graduating, moving, etc.)</li>
           <li>• Set a fair price - check similar items online</li>
           <li>• Respond quickly to interested buyers</li>
         </ul>

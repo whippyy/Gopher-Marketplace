@@ -2,6 +2,7 @@ import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../lib/firebase';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
+import Image from 'next/image';
 
 export default function Login() {
   const router = useRouter();
@@ -96,7 +97,7 @@ export default function Login() {
         className="w-full mt-4 bg-white border p-2 rounded flex items-center justify-center disabled:opacity-50"
         disabled={loading}
       >
-        <img src="https://www.google.com/favicon.ico" className="w-5 h-5 mr-2" />
+        <Image src="https://www.google.com/favicon.ico" alt="Google icon" width={20} height={20} className="w-5 h-5 mr-2" />
         {loading ? 'Signing In...' : 'Sign in with Google'}
       </button>
     </div>
