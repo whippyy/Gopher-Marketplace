@@ -24,9 +24,13 @@ export default function Login() {
       const result = await signInWithEmailAndPassword(auth, email, password);
       console.log('Email login success:', result.user.email);
       router.push('/');
-    } catch (error: any) {
-      console.error('Email login error:', error);
-      alert('Login failed: ' + error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Email login error:', error);
+        alert('Login failed: ' + error.message);
+      } else {
+        alert('Login failed');
+      }
     } finally {
       setLoading(false);
     }
@@ -47,9 +51,13 @@ export default function Login() {
       }
       
       router.push('/');
-    } catch (error: any) {
-      console.error('Google login error:', error);
-      alert('Google login failed: ' + error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Google login error:', error);
+        alert('Google login failed: ' + error.message);
+      } else {
+        alert('Google login failed');
+      }
     } finally {
       setLoading(false);
     }
