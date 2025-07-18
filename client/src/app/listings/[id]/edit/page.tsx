@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { AuthContext } from '../../../../../context/AuthContext';
 import { authenticatedFetch } from '../../../../../lib/api';
@@ -32,7 +32,7 @@ export default function EditListingPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  const fetchListing = async () => {
+  const fetchListing = useCallback(async () => {
     setIsLoading(true);
     setError('');
     try {
@@ -57,7 +57,7 @@ export default function EditListingPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     if (!loading && !user) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { authenticatedFetch } from '../../../lib/api';
@@ -22,7 +22,7 @@ export default function ProfilePage() {
   const [isLoadingListings, setIsLoadingListings] = useState(true);
   const [error, setError] = useState('');
 
-  const fetchMyListings = async () => {
+  const fetchMyListings = useCallback(async () => {
     setIsLoadingListings(true);
     setError('');
     try {
@@ -36,7 +36,7 @@ export default function ProfilePage() {
     } finally {
       setIsLoadingListings(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     if (user?.email) {
