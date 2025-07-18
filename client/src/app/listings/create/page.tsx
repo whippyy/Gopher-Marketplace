@@ -100,10 +100,13 @@ export default function CreateListingPage() {
         throw new Error(errorData || 'Failed to create listing');
       }
 
-      const newListing = await response.json();
       router.push('/listings');
-    } catch (err: any) {
-      setError(err.message || 'Failed to create listing. Please try again.');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || 'Failed to create listing. Please try again.');
+      } else {
+        setError('Failed to create listing. Please try again.');
+      }
     } finally {
       setIsSubmitting(false);
     }

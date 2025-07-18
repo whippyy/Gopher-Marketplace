@@ -67,8 +67,12 @@ export default function EditListingPage() {
         price: data.price?.toString() || '',
         contactEmail: data.contactEmail || '',
       });
-    } catch (err: any) {
-      setError('Could not load listing.');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError('Could not load listing.');
+      } else {
+        setError('Could not load listing.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -124,8 +128,12 @@ export default function EditListingPage() {
         throw new Error(errorData || 'Failed to update listing');
       }
       router.push('/listings');
-    } catch (err: any) {
-      setError(err.message || 'Failed to update listing. Please try again.');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || 'Failed to update listing. Please try again.');
+      } else {
+        setError('Failed to update listing. Please try again.');
+      }
     } finally {
       setIsSubmitting(false);
     }

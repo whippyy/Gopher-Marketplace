@@ -37,7 +37,7 @@ export default function ProfilePage() {
       const data = await response.json();
       // Only show listings owned by the user
       setMyListings(data.filter((l: Listing) => l.ownerId === user?.email));
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError('Could not load your listings.');
     } finally {
       setIsLoadingListings(false);
