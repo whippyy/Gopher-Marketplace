@@ -10,4 +10,4 @@ RUN dotnet publish -c Release -o out
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=build /app/server/out ./
-ENTRYPOINT ["sh", "-c", "echo 'Listing /app:' && ls -l /app && echo 'Listing /etc/secrets:' && ls -l /etc/secrets && dotnet server.dll"]
+ENTRYPOINT ["dotnet", "server.dll"]
