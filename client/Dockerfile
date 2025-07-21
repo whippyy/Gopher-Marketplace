@@ -1,23 +1,6 @@
-# Install dependencies only when needed
-FROM node:20-alpine AS deps
+FROM node:20-alpine
 WORKDIR /app
-COPY package.json package-lock.json* ./
-RUN npm ci
-
-# Build the app
-FROM node:20-alpine AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npm run build
-
-# Production image
-FROM node:20-alpine AS runner
-WORKDIR /app
-ENV NODE_ENV production
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+RUN npm ci
 EXPOSE 3000
-CMD ["sh", "-c", "npm run build && npm start"] 
+CMD ["sh", "-c", "echo 'Building at runtime...' && npm run build && npm start"] 
