@@ -10,9 +10,6 @@ RUN npm ci
 # Copy the rest of the app
 COPY . .
 
-# Build Next.js app during image build (not at runtime!)
-RUN npm run build
-
 # Expose the port Render expects (3000)
 EXPOSE 3000
 
