@@ -33,4 +33,7 @@ ENV NEXT_PUBLIC_FIREBASE_APP_ID=$NEXT_PUBLIC_FIREBASE_APP_ID
 RUN npm run build
 
 # Expose the port Render expects (3000)
+EXPOSE 3000
 
+# Start the server
+CMD ["npm", "start"]
