@@ -26,11 +26,11 @@ export default function ProfilePage() {
     setIsLoadingListings(true);
     setError('');
     try {
-      const response = await authenticatedFetch('http://localhost:5192/api/listings');
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      const response = await authenticatedFetch(`${apiUrl}/api/listings/my`);
       if (!response.ok) throw new Error('Failed to fetch listings');
       const data = await response.json();
-      // Only show listings owned by the user
-      setMyListings(data.filter((l: Listing) => l.ownerId === user?.email));
+      setMyListings(data);
     } catch {
       setError('Could not load your listings.');
     } finally {

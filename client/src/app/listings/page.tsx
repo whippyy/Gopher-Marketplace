@@ -37,7 +37,8 @@ export default function ListingsPage() {
   const fetchListings = async () => {
     try {
       setIsLoading(true);
-      const response = await authenticatedFetch('http://localhost:5192/api/listings');
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      const response = await authenticatedFetch(`${apiUrl}/api/listings`);
       if (!response.ok) {
         throw new Error('Failed to fetch listings');
       }
