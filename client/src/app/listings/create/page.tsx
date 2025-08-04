@@ -81,7 +81,8 @@ export default function CreateListingPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await authenticatedFetch('http://localhost:5192/api/listings', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      const response = await authenticatedFetch(`${apiUrl}/api/listings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
