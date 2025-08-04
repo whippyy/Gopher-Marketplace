@@ -7,7 +7,7 @@
 
 ## 🎯 Phase 1: Barebones MVP (3 Weeks)
 ### Week 1: Core Listing Flow
-- [X] Set up Next.js + .NET 8
+- [X] Set up Next.js + .NET 9
 - [X] Listing CRUD API (no auth)
 - [X] Basic listing grid UI
 - [ ] Deploy to Vercel + Azure

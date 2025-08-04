@@ -47,7 +47,8 @@ export default function ProfilePage() {
   const handleDelete = async (id: number) => {
     if (!window.confirm('Are you sure you want to delete this listing? This action cannot be undone.')) return;
     try {
-      const response = await authenticatedFetch(`http://localhost:5192/api/listings/${id}`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      const response = await authenticatedFetch(`${apiUrl}/api/listings/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error('Failed to delete listing');
