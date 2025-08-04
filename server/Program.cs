@@ -7,12 +7,16 @@ using GopherMarketplace.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Read allowed origins from configuration for CORS
+var allowedOrigins = builder.Configuration.GetValue<string>("Cors:AllowedOrigins")?.Split(',') 
+    ?? new[] { "http://localhost:3000", "http://localhost:3001" };
+
 // Configure CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "http://localhost:3001")
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
