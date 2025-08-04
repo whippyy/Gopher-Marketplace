@@ -20,16 +20,29 @@ namespace GopherMarketplace.Services
             // Initialize Firebase Admin SDK if not already initialized
             if (FirebaseApp.DefaultInstance == null)
             {
-                var serviceAccountPath = configuration["Firebase:ServiceAccountPath"];
-                if (string.IsNullOrEmpty(serviceAccountPath))
+                // Production: Use environment variable with JSON content for services like Render/Vercel/Azure
+                var firebaseCredentialsJson = configuration["Firebase:CredentialsJson"];
+                if (!string.IsNullOrEmpty(firebaseCredentialsJson))
                 {
-                    throw new InvalidOperationException("Firebase service account path not configured");
+                    FirebaseApp.Create(new AppOptions()
+                    {
+                        Credential = GoogleCredential.FromJson(firebaseCredentialsJson)
+                    });
                 }
-
-                FirebaseApp.Create(new AppOptions()
+                // Development: Fallback to service account file path for local development
+                else
                 {
-                    Credential = GoogleCredential.FromFile(serviceAccountPath)
-                });
+                    var serviceAccountPath = configuration["Firebase:ServiceAccountPath"];
+                    if (string.IsNullOrEmpty(serviceAccountPath))
+                    {
+                        throw new InvalidOperationException("Firebase credentials not configured. Set either Firebase:CredentialsJson (for production) or Firebase:ServiceAccountPath (for development).");
+                    }
+
+                    FirebaseApp.Create(new AppOptions()
+                    {
+                        Credential = GoogleCredential.FromFile(serviceAccountPath)
+                    });
+                }
             }
 
             _firebaseAuth = FirebaseAuth.DefaultInstance;

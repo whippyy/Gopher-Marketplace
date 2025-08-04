@@ -15,22 +15,31 @@ The backend has been configured with Firebase Admin SDK authentication. Here's w
 
 ### What You Need to Do:
 
-1. **Download Firebase Service Account JSON:**
+#### For Local Development
+
+1.  **Download Firebase Service Account JSON:**
    - Go to Firebase Console → Project Settings → Service Accounts
    - Click "Generate new private key"
    - Download the JSON file
 
-2. **Place the JSON file:**
+2.  **Place the JSON file:**
    - Save the downloaded JSON file as `firebase-service-account.json`
    - Place it in the `server/` directory (same level as `Program.cs`)
+    - The path is already configured in `appsettings.Development.json`.
 
-3. **Update appsettings.json (if needed):**
-   - The path is already configured as `"firebase-service-account.json"`
-   - If you use a different filename, update the `ServiceAccountPath` in `appsettings.json`
+#### For Production (Render, Vercel, Azure, etc.)
+
+Instead of using a file, we will use an environment variable to securely store the credentials.
+
+1.  Go to your hosting provider's dashboard (e.g., Render).
+2.  Navigate to the **Environment** settings for your backend service.
+3.  Add a new **Environment Variable** (do NOT use a "Secret File").
+    -   **Key**: `Firebase__CredentialsJson` (the double underscore `__` is important as it maps to the nested JSON structure in .NET).
+    -   **Value**: Open your downloaded `firebase-service-account.json` file, copy its **entire content**, and paste it into the value field.
 
 ### How It Works:
 - Frontend sends Firebase ID tokens in `Authorization: Bearer <token>` headers
-- Backend verifies tokens using Firebase Admin SDK
+- The backend first tries to load credentials from the `Firebase__CredentialsJson` environment variable. If that's not found, it falls back to using the local `firebase-service-account.json` file for development.
 - User email is extracted and used for ownership checks
 - All listing operations now require authentication
 - User can only edit/delete their own listings
