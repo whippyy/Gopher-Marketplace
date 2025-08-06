@@ -7,9 +7,11 @@ import Image from 'next/image';
 export default function Login() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleGoogleLogin = async () => {
     setLoading(true);
+    setError('');
     
     try {
       const result = await signInWithPopup(auth, googleProvider);
@@ -17,8 +19,7 @@ export default function Login() {
       
       if (!result.user.email?.endsWith('@umn.edu')) {
         await auth.signOut();
-        alert('Only UMN emails are allowed for this platform.');
-        setLoading(false);
+        setError('Only UMN emails are allowed for this platform.');
         return;
       }
       
@@ -26,9 +27,9 @@ export default function Login() {
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error('Google login error:', error);
-        alert('Google login failed: ' + error.message);
+        setError('Google login failed: ' + error.message);
       } else {
-        alert('Google login failed');
+        setError('An unknown error occurred during login.');
       }
     } finally {
       setLoading(false);
@@ -42,6 +43,11 @@ export default function Login() {
         <p className="text-gray-600 mb-8">
           Please sign in with your UMN Google account to continue.
         </p>
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
+            <span className="block sm:inline">{error}</span>
+          </div>
+        )}
         <button 
           onClick={handleGoogleLogin}
           className="w-full bg-maroon text-white p-3 rounded-lg flex items-center justify-center text-lg hover:bg-red-700 transition-colors disabled:opacity-50"
