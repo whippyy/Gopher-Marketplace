@@ -9,4 +9,5 @@ public class Listing
     public required string ContactEmail { get; set; }  // Will validate @umn.edu later
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public required string OwnerId { get; set; }
+    public List<string> ImageUrls { get; set; } = new List<string>();
 }
