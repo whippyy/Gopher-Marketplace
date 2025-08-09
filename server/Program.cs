@@ -37,6 +37,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Register Firebase service
 builder.Services.AddSingleton<IFirebaseService, FirebaseService>();
 
+// Register Firebase Storage service
+builder.Services.AddSingleton<IFirebaseStorageService, FirebaseStorageService>();
+
 builder.Services.AddControllers();
 var app = builder.Build();
 
