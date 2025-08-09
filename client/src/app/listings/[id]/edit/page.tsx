@@ -82,8 +82,8 @@ export default function EditListingPage() {
       const files = Array.from(e.target.files);
       
       // Limit to 5 total images (existing + new)
-      const totalImages = existingImages.length + newImages.length + imagesToDelete.length;
-      const filesToProcess = files.slice(0, 5 - totalImages);
+      const currentImageCount = existingImages.length + newImages.length - imagesToDelete.length;
+      const filesToProcess = files.slice(0, 5 - currentImageCount);
       
       filesToProcess.forEach(file => {
         // Create preview URL
