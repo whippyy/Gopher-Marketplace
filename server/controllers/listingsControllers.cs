@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using GopherMarketplace.Data;
 using GopherMarketplace.Models;
+using GopherMarketplace.Services;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace GopherMarketplace.Controllers;
 
@@ -9,10 +12,12 @@ namespace GopherMarketplace.Controllers;
 public class ListingsController : ControllerBase
 {
     private readonly AppDbContext _db;
+    private readonly IFirebaseStorageService _storageService;
 
-    public ListingsController(AppDbContext db)
+    public ListingsController(AppDbContext db, IFirebaseStorageService storageService)
     {
         _db = db;
+        _storageService = storageService;
     }
 
     // GET: api/listings
@@ -24,7 +29,7 @@ public class ListingsController : ControllerBase
 
     // POST: api/listings
     [HttpPost]
-    public ActionResult<Listing> CreateListing([FromBody] ListingDto newListing)
+    public async Task<ActionResult<Listing>> CreateListing([FromForm] string? listingData, [FromForm] List<IFormFile>? images)
     {
         // Get authenticated user email from middleware
         var userEmail = HttpContext.Items["UserEmail"]?.ToString();
@@ -39,19 +44,57 @@ public class ListingsController : ControllerBase
             return BadRequest("Only @umn.edu emails are allowed.");
         }
 
-        // 2. Validate price
+        // 2. Deserialize listing data
+        if (string.IsNullOrEmpty(listingData))
+        {
+            return BadRequest("Listing data is required.");
+        }
+
+        ListingDto newListing;
+        try
+        {
+            newListing = System.Text.Json.JsonSerializer.Deserialize<ListingDto>(listingData)
+                ?? throw new InvalidOperationException("Invalid listing data format.");
+        }
+        catch (Exception)
+        {
+            return BadRequest("Invalid listing data format.");
+        }
+
+        // 3. Validate price
         if (newListing.Price <= 0)
         {
             return BadRequest("Price must be greater than $0.");
         }
 
-        // 3. Validate title
+        // 4. Validate title
         if (string.IsNullOrWhiteSpace(newListing.Title))
         {
             return BadRequest("Title is required.");
         }
 
-        // 4. Create the listing
+        // 5. Process images if provided
+        var imageUrls = new List<string>();
+        if (images != null && images.Count > 0)
+        {
+            foreach (var image in images.Take(5)) // Limit to 5 images
+            {
+                if (image.Length > 0)
+                {
+                    try
+                    {
+                        var imageUrl = await _storageService.UploadImageAsync(image.OpenReadStream(), image.FileName, userEmail);
+                        imageUrls.Add(imageUrl);
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest($"Failed to upload image {image.FileName}: {ex.Message}");
+                    }
+                }
+            }
+        }
+
+        // 6. Create the listing
         var listing = new Listing
         {
             Title = newListing.Title.Trim(),
@@ -59,13 +102,14 @@ public class ListingsController : ControllerBase
             Price = newListing.Price,
             ContactEmail = userEmail,
             CreatedAt = DateTime.UtcNow,
-            OwnerId = userEmail
+            OwnerId = userEmail,
+            ImageUrls = imageUrls
         };
 
         _db.Listings.Add(listing);
         _db.SaveChanges();
         
-        // 5. Return 201 Created with the new listing
+        // 7. Return 201 Created with the new listing
         return CreatedAtAction(
             actionName: nameof(GetListings),
             value: listing);
