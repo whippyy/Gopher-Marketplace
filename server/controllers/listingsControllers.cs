@@ -212,7 +212,7 @@ public class ListingsController : ControllerBase
 
     // DELETE: api/listings/{id}
     [HttpDelete("{id}")]
-    public IActionResult DeleteListing(int id)
+    public async Task<IActionResult> DeleteListing(int id)
     {
         // Get authenticated user email from middleware
         var userEmail = HttpContext.Items["UserEmail"]?.ToString();
@@ -230,6 +230,23 @@ public class ListingsController : ControllerBase
         // Verify ownership
         if (!string.Equals(listing.OwnerId, userEmail, StringComparison.OrdinalIgnoreCase))
             return Forbid();
+
+        // Delete associated images from Firebase Storage
+        if (listing.ImageUrls != null && listing.ImageUrls.Count > 0)
+        {
+            foreach (var imageUrl in listing.ImageUrls)
+            {
+                try
+                {
+                    await _storageService.DeleteImageAsync(imageUrl);
+                }
+                catch (Exception ex)
+                {
+                    // Log the error but continue with other deletions
+                    Console.WriteLine($"Failed to delete image {imageUrl}: {ex.Message}");
+                }
+            }
+        }
 
         _db.Listings.Remove(listing);
         _db.SaveChanges();
