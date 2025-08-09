@@ -1,7 +1,8 @@
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.Extensions.Configuration;
-using Firebase.Storage;
+using Google.Cloud.Storage.V1;
+using System.IO;
 
 namespace GopherMarketplace.Services
 {
@@ -14,19 +15,19 @@ namespace GopherMarketplace.Services
     public class FirebaseStorageService : IFirebaseStorageService
     {
         private readonly string _storageBucket;
-        private readonly FirebaseStorage _storage;
+        private readonly StorageClient _storage;
 
         public FirebaseStorageService(IConfiguration configuration)
         {
             // Get the storage bucket from configuration
-            _storageBucket = configuration["Firebase:StorageBucket"] ?? 
+            _storageBucket = configuration["Firebase:StorageBucket"] ??
                 throw new InvalidOperationException("Firebase Storage Bucket not configured. Set Firebase:StorageBucket in configuration.");
 
-            // Initialize Firebase Storage client
-            var firebaseApp = FirebaseApp.DefaultInstance ?? 
+            // Initialize Google Cloud Storage client
+            var firebaseApp = FirebaseApp.DefaultInstance ??
                 throw new InvalidOperationException("Firebase Admin SDK not initialized. Initialize FirebaseService first.");
 
-            _storage = new FirebaseStorage(_storageBucket);
+            _storage = StorageClient.Create();
         }
 
         public async Task<string> UploadImageAsync(Stream imageStream, string fileName, string userId)
@@ -36,13 +37,18 @@ namespace GopherMarketplace.Services
                 // Create a unique file name to prevent conflicts
                 var uniqueFileName = $"{userId}/{Guid.NewGuid()}_{fileName}";
 
-                // Upload the file to Firebase Storage
-                var imageUrl = await _storage
-                    .Child("listings")
-                    .Child(uniqueFileName)
-                    .PutAsync(imageStream);
+                // Set the object name in Firebase Storage
+                var storageObjectName = $"listings/{uniqueFileName}";
 
-                return imageUrl;
+                // Upload the file to Firebase Storage
+                var storageObject = await _storage.UploadObjectAsync(
+                    _storageBucket,
+                    storageObjectName,
+                    null, // auto-detect content type
+                    imageStream);
+
+                // Return the public URL for the uploaded image
+                return $"https://firebasestorage.googleapis.com/v0/b/{_storageBucket}/o/{storageObjectName.Replace("/", "%2F")}?alt=media";
             }
             catch (Exception ex)
             {
@@ -70,9 +76,7 @@ namespace GopherMarketplace.Services
                         filePath = filePath.Substring(0, queryIndex);
                     }
 
-                    await _storage
-                        .Child(filePath)
-                        .DeleteAsync();
+                    await _storage.DeleteObjectAsync(_storageBucket, filePath);
                 }
             }
             catch (Exception ex)
