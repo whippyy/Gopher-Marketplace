@@ -13,6 +13,7 @@ interface Listing {
   contactEmail: string;
   createdAt: string;
   ownerId: string;
+  imageUrls?: string[];
 }
 
 export default function ListingsPage() {

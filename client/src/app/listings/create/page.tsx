@@ -245,7 +245,72 @@ export default function CreateListingPage() {
               />
             </div>
           </div>
-
+          
+          {/* Image Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Images (Optional)
+            </label>
+            <p className="text-sm text-gray-500 mb-3">
+              Add up to 5 images of your item. First image will be displayed as the main image.
+            </p>
+            
+            {/* Image Preview Area */}
+            {images.length > 0 && (
+              <div className="grid grid-cols-3 gap-2 mb-3">
+                {images.map((image) => (
+                  <div key={image.id} className="relative group">
+                    <img
+                      src={image.previewUrl}
+                      alt="Preview"
+                      className="w-full h-24 object-cover rounded-lg border border-gray-300"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(image.id)}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {/* File Input */}
+            <div className="flex items-center gap-2">
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleImageChange}
+                accept="image/*"
+                multiple
+                disabled={images.length >= 5}
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={images.length >= 5}
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Select Images
+              </button>
+              {images.length > 0 && (
+                <button
+                  type="button"
+                  onClick={clearImages}
+                  className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200"
+                >
+                  Clear All
+                </button>
+              )}
+              <span className="text-sm text-gray-500">
+                {images.length}/5 images selected
+              </span>
+            </div>
+          </div>
+          
           {/* Contact Email */}
           <div>
             <label htmlFor="contactEmail" className="block text-sm font-medium text-gray-700 mb-2">
