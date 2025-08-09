@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, useRef } from 'react';
 import { AuthContext } from '../../../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { authenticatedFetch } from '../../../../lib/api';
@@ -12,17 +12,65 @@ interface ListingForm {
   contactEmail: string;
 }
 
+interface ImageFile {
+  file: File;
+  previewUrl: string;
+  id: string;
+}
+
 export default function CreateListingPage() {
   const { user, loading } = useContext(AuthContext);
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState<ListingForm>({
     title: '',
     description: '',
     price: '',
     contactEmail: user?.email || '',
   });
+  const [images, setImages] = useState<ImageFile[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  // Handle image selection
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const newImages: ImageFile[] = [];
+      const files = Array.from(e.target.files);
+      
+      // Limit to 5 images
+      const filesToProcess = files.slice(0, 5 - images.length);
+      
+      filesToProcess.forEach(file => {
+        // Create preview URL
+        const previewUrl = URL.createObjectURL(file);
+        newImages.push({
+          file,
+          previewUrl,
+          id: Math.random().toString(36).substring(2, 9)
+        });
+      });
+      
+      setImages(prev => [...prev, ...newImages]);
+    }
+  };
+
+  // Remove an image
+  const removeImage = (id: string) => {
+    setImages(prev => {
+      const imageToRemove = prev.find(img => img.id === id);
+      if (imageToRemove) {
+        URL.revokeObjectURL(imageToRemove.previewUrl); // Clean up memory
+      }
+      return prev.filter(img => img.id !== id);
+    });
+  };
+
+  // Clear all images
+  const clearImages = () => {
+    images.forEach(img => URL.revokeObjectURL(img.previewUrl));
+    setImages([]);
+  };
 
   useEffect(() => {
     if (user?.email) {
@@ -82,18 +130,28 @@ export default function CreateListingPage() {
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      
+      // Create FormData object for multipart form submission
+      const formDataToSend = new FormData();
+      
+      // Add listing data as JSON string
+      const listingData = {
+        title: formData.title.trim(),
+        description: formData.description.trim(),
+        price: parseFloat(formData.price),
+      };
+      
+      formDataToSend.append('listingData', JSON.stringify(listingData));
+      
+      // Add image files
+      images.forEach(img => {
+        formDataToSend.append('images', img.file);
+      });
+
+      // Send request with FormData (multipart/form-data content type is set automatically)
       const response = await authenticatedFetch(`${apiUrl}/api/listings`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: formData.title.trim(),
-          description: formData.description.trim(),
-          price: parseFloat(formData.price),
-          contactEmail: user?.email || '', // Always use logged-in user's email
-          OwnerId: user.email, // <-- PascalCase to match backend
-        }),
+        body: formDataToSend,
       });
 
       if (!response.ok) {
