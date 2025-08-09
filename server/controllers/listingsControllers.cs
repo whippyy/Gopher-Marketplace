@@ -117,7 +117,7 @@ public class ListingsController : ControllerBase
 
     // PATCH: api/listings/{id}
     [HttpPatch("{id}")]
-    public ActionResult<Listing> UpdateListing(int id, [FromBody] ListingDto updateDto)
+    public async Task<ActionResult<Listing>> UpdateListing(int id, [FromForm] string? listingData, [FromForm] List<IFormFile>? newImages, [FromForm] List<string>? deleteImageUrls)
     {
         // Get authenticated user email from middleware
         var userEmail = HttpContext.Items["UserEmail"]?.ToString();
@@ -137,15 +137,74 @@ public class ListingsController : ControllerBase
         if (!string.Equals(listing.OwnerId, userEmail, StringComparison.OrdinalIgnoreCase))
             return Forbid(); // HTTP 403
 
-        // Apply updates (only modify provided fields)
-        if (!string.IsNullOrWhiteSpace(updateDto.Title))
-            listing.Title = updateDto.Title.Trim();
+        // Deserialize listing data if provided
+        if (!string.IsNullOrEmpty(listingData))
+        {
+            try
+            {
+                var updateDto = System.Text.Json.JsonSerializer.Deserialize<ListingDto>(listingData);
+                if (updateDto != null)
+                {
+                    // Apply updates (only modify provided fields)
+                    if (!string.IsNullOrWhiteSpace(updateDto.Title))
+                        listing.Title = updateDto.Title.Trim();
 
-        if (updateDto.Description != null)
-            listing.Description = updateDto.Description.Trim();
+                    if (updateDto.Description != null)
+                        listing.Description = updateDto.Description.Trim();
 
-        if (updateDto.Price > 0)
-            listing.Price = updateDto.Price;
+                    if (updateDto.Price > 0)
+                        listing.Price = updateDto.Price;
+
+                    if (updateDto.ImageUrls != null)
+                        listing.ImageUrls = updateDto.ImageUrls;
+                }
+            }
+            catch (Exception)
+            {
+                return BadRequest("Invalid listing data format.");
+            }
+        }
+
+        // Process new images if provided
+        if (newImages != null && newImages.Count > 0)
+        {
+            foreach (var image in newImages.Take(5)) // Limit to 5 images
+            {
+                if (image.Length > 0)
+                {
+                    try
+                    {
+                        var imageUrl = await _storageService.UploadImageAsync(image.OpenReadStream(), image.FileName, userEmail);
+                        listing.ImageUrls.Add(imageUrl);
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest($"Failed to upload image {image.FileName}: {ex.Message}");
+                    }
+                }
+            }
+        }
+
+        // Delete images if requested
+        if (deleteImageUrls != null && deleteImageUrls.Count > 0)
+        {
+            foreach (var imageUrl in deleteImageUrls)
+            {
+                if (listing.ImageUrls.Contains(imageUrl))
+                {
+                    try
+                    {
+                        await _storageService.DeleteImageAsync(imageUrl);
+                        listing.ImageUrls.Remove(imageUrl);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log the error but continue with other deletions
+                        Console.WriteLine($"Failed to delete image {imageUrl}: {ex.Message}");
+                    }
+                }
+            }
+        }
 
         _db.SaveChanges();
         return Ok(listing);
