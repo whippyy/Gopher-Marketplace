@@ -154,9 +154,6 @@ public class ListingsController : ControllerBase
 
                     if (updateDto.Price > 0)
                         listing.Price = updateDto.Price;
-
-                    if (updateDto.ImageUrls != null)
-                        listing.ImageUrls = updateDto.ImageUrls;
                 }
             }
             catch (Exception)
