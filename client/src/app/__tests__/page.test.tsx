@@ -1,10 +1,8 @@
-
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import Home from '../page';
 import { AuthContext } from '../../../context/AuthContext';
 import { useRouter } from 'next/navigation';
-import { signOut } from 'firebase/auth';\
-import ListingsPage from '../listings/page';
+import { signOut } from 'firebase/auth';
 
 // Mock the necessary modules
 jest.mock('next/navigation', () => ({
@@ -40,7 +38,7 @@ describe('Home component', () => {
       </AuthContext.Provider>
     );
     expect(screen.getByText('You need to log in to access the marketplace.')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Go to Login' })).toBeInTheDo    import ListingsPage from '../listings/page';    import ListingsPage from '../listings/page';cument();
+    expect(screen.getByRole('button', { name: 'Go to Login' })).toBeInTheDocument();
   });
 
   it('should render welcome message and user email when user is authenticated', () => {
