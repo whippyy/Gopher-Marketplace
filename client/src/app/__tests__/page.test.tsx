@@ -4,6 +4,7 @@ import { AuthContext } from '../../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'firebase/auth';
 import '@testing-library/jest-dom';
+import type { User } from 'firebase/auth';
 
 // Mock the necessary modules
 jest.mock('next/navigation', () => ({
