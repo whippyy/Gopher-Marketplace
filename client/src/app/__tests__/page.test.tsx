@@ -117,7 +117,7 @@ describe('Home component', () => {
     mockUseRouter.mockReturnValue({ push });
     const error = new Error('Sign out failed');
     mockSignOut.mockRejectedValue(error);
-    const mockUser = { email: 'test@umn.edu', emailVerified: true } as Partial<User>;
+    const mockUser = { email: 'test@umn.edu', emailVerified: true } as unknown as User;
 
     render(
       <AuthContext.Provider value={{ user: mockUser, loading: false }}>
