@@ -3,6 +3,7 @@ import Home from '../page';
 import { AuthContext } from '../../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'firebase/auth';
+import '@testing-library/jest-dom';
 
 // Mock the necessary modules
 jest.mock('next/navigation', () => ({
