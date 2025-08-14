@@ -43,7 +43,7 @@ describe('Home component', () => {
   });
 
   it('should render welcome message and user email when user is authenticated', () => {
-    const mockUser = { email: 'test@umn.edu', emailVerified: true };
+    const mockUser = { email: 'test@umn.edu', emailVerified: true } as Partial<User>;
     mockUseRouter.mockReturnValue({ push: jest.fn() });
     render(
       <AuthContext.Provider value={{ user: mockUser, loading: false }}>
@@ -70,7 +70,7 @@ describe('Home component', () => {
   it('should call router.push with correct paths when navigation buttons are clicked', () => {
     const push = jest.fn();
     mockUseRouter.mockReturnValue({ push });
-    const mockUser = { email: 'test@umn.edu', emailVerified: true };
+    const mockUser = { email: 'test@umn.edu', emailVerified: true } as Partial<User>;
     render(
       <AuthContext.Provider value={{ user: mockUser, loading: false }}>
         <Home />
@@ -91,7 +91,7 @@ describe('Home component', () => {
     const push = jest.fn();
     mockUseRouter.mockReturnValue({ push });
     mockSignOut.mockResolvedValue(undefined);
-    const mockUser = { email: 'test@umn.edu', emailVerified: true };
+    const mockUser = { email: 'test@umn.edu', emailVerified: true } as Partial<User>;
 
     render(
       <AuthContext.Provider value={{ user: mockUser, loading: false }}>
@@ -116,7 +116,7 @@ describe('Home component', () => {
     mockUseRouter.mockReturnValue({ push });
     const error = new Error('Sign out failed');
     mockSignOut.mockRejectedValue(error);
-    const mockUser = { email: 'test@umn.edu', emailVerified: true };
+    const mockUser = { email: 'test@umn.edu', emailVerified: true } as Partial<User>;
 
     render(
       <AuthContext.Provider value={{ user: mockUser, loading: false }}>
