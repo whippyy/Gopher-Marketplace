@@ -10,7 +10,7 @@ import type { User } from 'firebase/auth';
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }));
-jest.mock('../../../../lib/api', () => ({
+jest.mock('../../../lib/api', () => ({
   authenticatedFetch: jest.fn(),
 }));
 
