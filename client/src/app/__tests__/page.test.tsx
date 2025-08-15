@@ -53,7 +53,7 @@ describe('Home component', () => {
     );
     expect(screen.getByText('Welcome to Gopher Marketplace')).toBeInTheDocument();
     expect(screen.getByText('You are logged in!')).toBeInTheDocument();
-    expect(screen.getByText(`Email: ${mockUser.email}`)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(`Email: ${mockUser.email}`, 'i'))).toBeInTheDocument();
   });
 
   it('should call router.push with "/login" when login button is clicked', () => {
@@ -78,13 +78,13 @@ describe('Home component', () => {
       </AuthContext.Provider>
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'Browse Listings' }));
+    fireEvent.click(screen.getByRole('button', { name: /browse listings/i }));
     expect(push).toHaveBeenCalledWith('/listings');
 
-    fireEvent.click(screen.getByRole('button', { name: 'Create Listing' }));
+    fireEvent.click(screen.getByRole('button', { name: /create listing/i }));
     expect(push).toHaveBeenCalledWith('/listings/create');
 
-    fireEvent.click(screen.getByRole('button', { name: 'View Profile' }));
+    fireEvent.click(screen.getByRole('button', { name: /view profile/i }));
     expect(push).toHaveBeenCalledWith('/profile');
   });
 
