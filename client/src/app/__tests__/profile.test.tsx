@@ -7,6 +7,10 @@ import '@testing-library/jest-dom';
 import type { User } from 'firebase/auth';
 
 // Mock dependencies
+jest.mock('../../../lib/firebase', () => ({
+  auth: {},
+}));
+
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }));
