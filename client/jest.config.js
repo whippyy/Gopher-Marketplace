@@ -1,4 +1,4 @@
-lconst nextJest = require('next/jest')
+const nextJest = require('next/jest')
 
 /** @type {import('jest').Config} */
 const createJestConfig = nextJest({
@@ -13,4 +13,4 @@ const customJestConfig = {
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
-module.exports = createJestConfig(customJestConfig)e
+module.exports = createJestConfig(customJestConfig);
