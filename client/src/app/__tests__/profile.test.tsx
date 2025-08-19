@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import ProfilePage from '../page';
+import ProfilePage from '../profile/page';
 import { AuthContext } from '../../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { authenticatedFetch } from '../../../lib/api';
@@ -168,4 +168,3 @@ describe('ProfilePage', () => {
     expect(screen.getByText('Lab Goggles')).toBeInTheDocument();
   });
 });
-
