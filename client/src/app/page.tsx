@@ -69,7 +69,7 @@ export default function Home() {
             
             <div className="flex space-x-4">
               <button
-                onClick={() => router.push('/profile/profile')}
+                onClick={() => router.push('/profile')}
                 className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors"
               >
                 View Profile
