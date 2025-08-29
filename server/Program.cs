@@ -74,10 +74,13 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+// Apply the named CORS policy globally (MUST be before auth middlewares)
+app.UseCors("AllowFrontend");
 
 app.UseIpRateLimiting();
 app.UseFirebaseAuth();
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 app.Run();
