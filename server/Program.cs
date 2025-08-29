@@ -70,7 +70,13 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-app.UseCors("AllowFrontend");
+app.UseCors(builder =>
+    builder
+        .WithOrigins("https://gophermarketplace-frontend.onrender.com")
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+);
+
 app.UseIpRateLimiting();
 app.UseFirebaseAuth();
 app.UseAuthentication();
