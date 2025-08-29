@@ -81,16 +81,6 @@ export default function Home() {
                 Sign Out
               </button>
             </div>
-            
-            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-              <h3 className="font-semibold mb-2">Authentication Status:</h3>
-              <ul className="text-sm space-y-1">
-                <li>✅ User authenticated: {user ? 'Yes' : 'No'}</li>
-                <li>✅ UMN email verified: {user?.email?.endsWith('@umn.edu') ? 'Yes' : 'No'}</li>
-                <li>✅ Email verified: {user?.emailVerified ? 'Yes' : 'No'}</li>
-                <li>✅ Loading state: {loading ? 'Yes' : 'No'}</li>
-              </ul>
-            </div>
           </div>
         ) : (
           <div className="text-center">
