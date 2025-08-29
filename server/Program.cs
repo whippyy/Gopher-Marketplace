@@ -16,9 +16,13 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins(allowedOrigins)
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        policy.WithOrigins(
+            "https://gophermarketplace-frontend.onrender.com",
+            "http://localhost:3000",
+            "http://localhost:3001"
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod();
     });
 });
 
@@ -70,15 +74,10 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-app.UseCors(builder =>
-    builder
-        .WithOrigins("https://gophermarketplace-frontend.onrender.com")
-        .AllowAnyHeader()
-        .AllowAnyMethod()
-);
 
 app.UseIpRateLimiting();
 app.UseFirebaseAuth();
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapControllers();
 app.Run();
