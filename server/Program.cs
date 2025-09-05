@@ -26,18 +26,8 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Configure rate limiting
-builder.Services.AddMemoryCache();
-builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
-builder.Services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
-builder.Services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
-builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
-builder.Services.AddSingleton<AspNetCoreRateLimit.IProcessingStrategy, AspNetCoreRateLimit.AsyncKeyLockProcessingStrategy>();
-
-// Add SQLite
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
-
+// Add application services from the extension method
+builder.Services.AddGopherMarketplaceServices(builder.Configuration);
 
 builder.Services.AddControllers();
 var app = builder.Build();
@@ -72,9 +62,8 @@ using (var scope = app.Services.CreateScope())
 // Apply the named CORS policy globally (MUST be before auth middlewares)
 app.UseCors("AllowFrontend");
 
-app.UseIpRateLimiting();
-app.UseFirebaseAuth();
-app.UseAuthentication();
+// Use custom middleware
+app.UseGopherMarketplaceMiddleware();
 app.UseAuthorization();
 
 app.MapControllers();

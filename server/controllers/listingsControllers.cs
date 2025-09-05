@@ -69,8 +69,10 @@ public class ListingsController : ControllerBase
         
         // 7. Return 201 Created with the new listing
         return CreatedAtAction(
-            actionName: nameof(GetListings),
-            value: listing);
+            actionName: nameof(GetListing),
+            routeValues: new { id = listing.Id },
+            value: listing
+        );
     }
 
     // PATCH: api/listings/{id}
