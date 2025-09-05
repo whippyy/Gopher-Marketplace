@@ -39,8 +39,6 @@ using (var scope = app.Services.CreateScope())
     db.Database.EnsureCreated();
 }
 
-app.MapControllers();
-
 // Seed sample listings if DB is empty
 using (var scope = app.Services.CreateScope())
 {
@@ -64,6 +62,7 @@ app.UseCors("AllowFrontend");
 
 // Use custom middleware
 app.UseGopherMarketplaceMiddleware();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
