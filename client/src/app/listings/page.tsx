@@ -13,7 +13,6 @@ interface Listing {
   contactEmail: string;
   createdAt: string;
   ownerId: string;
-  imageUrls?: string[];
 }
 
 export default function ListingsPage() {
@@ -196,22 +195,6 @@ export default function ListingsPage() {
                   key={listing.id}
                   className="bg-gray-50 rounded-lg shadow-md border hover:shadow-lg transition-shadow duration-200 overflow-hidden"
                 >
-                  {/* Image Preview */}
-                  {listing.imageUrls && listing.imageUrls.length > 0 && (
-                    <div className="h-48 overflow-hidden">
-                      <img
-                        src={listing.imageUrls[0]}
-                        alt={listing.title}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          // Handle broken image links gracefully
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                        }}
-                      />
-                    </div>
-                  )}
-                  
                   <div className="p-4">
                     <div className="flex justify-between items-start mb-2">
                       <h3 className="font-semibold text-gray-800 text-lg line-clamp-2">

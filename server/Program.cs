@@ -26,23 +26,8 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Configure rate limiting
-builder.Services.AddMemoryCache();
-builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
-builder.Services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
-builder.Services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
-builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
-builder.Services.AddSingleton<AspNetCoreRateLimit.IProcessingStrategy, AspNetCoreRateLimit.AsyncKeyLockProcessingStrategy>();
-
-// Add SQLite
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// Register Firebase service
-builder.Services.AddSingleton<IFirebaseService, FirebaseService>();
-
-// Register Firebase Storage service
-builder.Services.AddSingleton<IFirebaseStorageService, FirebaseStorageService>();
+// Add application services from the extension method
+builder.Services.AddGopherMarketplaceServices(builder.Configuration);
 
 builder.Services.AddControllers();
 var app = builder.Build();
@@ -53,8 +38,6 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
 }
-
-app.MapControllers();
 
 // Seed sample listings if DB is empty
 using (var scope = app.Services.CreateScope())
@@ -77,8 +60,8 @@ using (var scope = app.Services.CreateScope())
 // Apply the named CORS policy globally (MUST be before auth middlewares)
 app.UseCors("AllowFrontend");
 
-app.UseIpRateLimiting();
-app.UseFirebaseAuth();
+// Use custom middleware
+app.UseGopherMarketplaceMiddleware();
 app.UseAuthentication();
 app.UseAuthorization();
 

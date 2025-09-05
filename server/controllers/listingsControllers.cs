@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using GopherMarketplace.Data;
 using GopherMarketplace.Models;
 using GopherMarketplace.Services;
-using Microsoft.AspNetCore.Http;
-using System.IO;
 
 namespace GopherMarketplace.Controllers;
 
@@ -12,12 +10,10 @@ namespace GopherMarketplace.Controllers;
 public class ListingsController : ControllerBase
 {
     private readonly AppDbContext _db;
-    private readonly IFirebaseStorageService _storageService;
 
-    public ListingsController(AppDbContext db, IFirebaseStorageService storageService)
+    public ListingsController(AppDbContext db)
     {
         _db = db;
-        _storageService = storageService;
     }
 
     // GET: api/listings
@@ -29,7 +25,7 @@ public class ListingsController : ControllerBase
 
     // POST: api/listings
     [HttpPost]
-    public async Task<ActionResult<Listing>> CreateListing([FromForm] string? listingData, [FromForm] List<IFormFile>? images)
+    public async Task<ActionResult<Listing>> CreateListing([FromBody] ListingDto newListing)
     {
         // Get authenticated user email from middleware
         var userEmail = HttpContext.Items["UserEmail"]?.ToString();
@@ -44,23 +40,6 @@ public class ListingsController : ControllerBase
             return BadRequest("Only @umn.edu emails are allowed.");
         }
 
-        // 2. Deserialize listing data
-        if (string.IsNullOrEmpty(listingData))
-        {
-            return BadRequest("Listing data is required.");
-        }
-
-        ListingDto newListing;
-        try
-        {
-            newListing = System.Text.Json.JsonSerializer.Deserialize<ListingDto>(listingData)
-                ?? throw new InvalidOperationException("Invalid listing data format.");
-        }
-        catch (Exception)
-        {
-            return BadRequest("Invalid listing data format.");
-        }
-
         // 3. Validate price
         if (newListing.Price <= 0)
         {
@@ -73,28 +52,7 @@ public class ListingsController : ControllerBase
             return BadRequest("Title is required.");
         }
 
-        // 5. Process images if provided
-        var imageUrls = new List<string>();
-        if (images != null && images.Count > 0)
-        {
-            foreach (var image in images.Take(5)) // Limit to 5 images
-            {
-                if (image.Length > 0)
-                {
-                    try
-                    {
-                        var imageUrl = await _storageService.UploadImageAsync(image.OpenReadStream(), image.FileName, userEmail);
-                        imageUrls.Add(imageUrl);
-                    }
-                    catch (Exception ex)
-                    {
-                        return BadRequest($"Failed to upload image {image.FileName}: {ex.Message}");
-                    }
-                }
-            }
-        }
-
-        // 6. Create the listing
+        // 5. Create the listing
         var listing = new Listing
         {
             Title = newListing.Title.Trim(),
@@ -103,7 +61,7 @@ public class ListingsController : ControllerBase
             ContactEmail = userEmail,
             CreatedAt = DateTime.UtcNow,
             OwnerId = userEmail,
-            ImageUrls = imageUrls
+            ImageUrls = new List<string>()
         };
 
         _db.Listings.Add(listing);
@@ -111,13 +69,15 @@ public class ListingsController : ControllerBase
         
         // 7. Return 201 Created with the new listing
         return CreatedAtAction(
-            actionName: nameof(GetListings),
-            value: listing);
+            actionName: nameof(GetListing),
+            routeValues: new { id = listing.Id },
+            value: listing
+        );
     }
 
     // PATCH: api/listings/{id}
     [HttpPatch("{id}")]
-    public async Task<ActionResult<Listing>> UpdateListing(int id, [FromForm] string? listingData, [FromForm] List<IFormFile>? newImages, [FromForm] List<string>? deleteImageUrls)
+    public async Task<ActionResult<Listing>> UpdateListing(int id, [FromBody] ListingDto updateDto)
     {
         // Get authenticated user email from middleware
         var userEmail = HttpContext.Items["UserEmail"]?.ToString();
@@ -137,70 +97,20 @@ public class ListingsController : ControllerBase
         if (!string.Equals(listing.OwnerId, userEmail, StringComparison.OrdinalIgnoreCase))
             return Forbid(); // HTTP 403
 
-        // Deserialize listing data if provided
-        if (!string.IsNullOrEmpty(listingData))
+        // Apply updates (only modify provided fields)
+        if (!string.IsNullOrWhiteSpace(updateDto.Title))
         {
-            try
-            {
-                var updateDto = System.Text.Json.JsonSerializer.Deserialize<ListingDto>(listingData);
-                if (updateDto != null)
-                {
-                    // Apply updates (only modify provided fields)
-                    if (!string.IsNullOrWhiteSpace(updateDto.Title))
-                        listing.Title = updateDto.Title.Trim();
-
-                    if (updateDto.Description != null)
-                        listing.Description = updateDto.Description.Trim();
-
-                    if (updateDto.Price > 0)
-                        listing.Price = updateDto.Price;
-                }
-            }
-            catch (Exception)
-            {
-                return BadRequest("Invalid listing data format.");
-            }
+            listing.Title = updateDto.Title.Trim();
         }
 
-        // Process new images if provided
-        if (newImages != null && newImages.Count > 0)
+        if (updateDto.Description != null)
         {
-            foreach (var image in newImages.Take(5)) // Limit to 5 images
-            {
-                if (image.Length > 0)
-                {
-                    try
-                    {
-                        var imageUrl = await _storageService.UploadImageAsync(image.OpenReadStream(), image.FileName, userEmail);
-                        listing.ImageUrls.Add(imageUrl);
-                    }
-                    catch (Exception ex)
-                    {
-                        return BadRequest($"Failed to upload image {image.FileName}: {ex.Message}");
-                    }
-                }
-            }
+            listing.Description = updateDto.Description.Trim();
         }
 
-        // Delete images if requested
-        if (deleteImageUrls != null && deleteImageUrls.Count > 0)
+        if (updateDto.Price > 0)
         {
-            foreach (var imageUrl in deleteImageUrls)
-            {
-                if (listing.ImageUrls.Contains(imageUrl))
-                {
-                    try
-                    {
-                        await _storageService.DeleteImageAsync(imageUrl);
-                        listing.ImageUrls.Remove(imageUrl);
-                    }
-                    catch (Exception ex)
-                    {
-                        // Log the error but continue with other deletions
-                        Console.WriteLine($"Failed to delete image {imageUrl}: {ex.Message}");
-                    }
-                }
-            }
+            listing.Price = updateDto.Price;
         }
 
         _db.SaveChanges();
@@ -227,23 +137,6 @@ public class ListingsController : ControllerBase
         // Verify ownership
         if (!string.Equals(listing.OwnerId, userEmail, StringComparison.OrdinalIgnoreCase))
             return Forbid();
-
-        // Delete associated images from Firebase Storage
-        if (listing.ImageUrls != null && listing.ImageUrls.Count > 0)
-        {
-            foreach (var imageUrl in listing.ImageUrls)
-            {
-                try
-                {
-                    await _storageService.DeleteImageAsync(imageUrl);
-                }
-                catch (Exception ex)
-                {
-                    // Log the error but continue with other deletions
-                    Console.WriteLine($"Failed to delete image {imageUrl}: {ex.Message}");
-                }
-            }
-        }
 
         _db.Listings.Remove(listing);
         _db.SaveChanges();
