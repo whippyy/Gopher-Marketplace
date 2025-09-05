@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext, useState, useEffect, useRef } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../../../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { authenticatedFetch } from '../../../../lib/api';
@@ -12,65 +12,17 @@ interface ListingForm {
   contactEmail: string;
 }
 
-interface ImageFile {
-  file: File;
-  previewUrl: string;
-  id: string;
-}
-
 export default function CreateListingPage() {
   const { user, loading } = useContext(AuthContext);
   const router = useRouter();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState<ListingForm>({
     title: '',
     description: '',
     price: '',
     contactEmail: user?.email || '',
   });
-  const [images, setImages] = useState<ImageFile[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
-
-  // Handle image selection
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const newImages: ImageFile[] = [];
-      const files = Array.from(e.target.files);
-      
-      // Limit to 5 images
-      const filesToProcess = files.slice(0, 5 - images.length);
-      
-      filesToProcess.forEach(file => {
-        // Create preview URL
-        const previewUrl = URL.createObjectURL(file);
-        newImages.push({
-          file,
-          previewUrl,
-          id: Math.random().toString(36).substring(2, 9)
-        });
-      });
-      
-      setImages(prev => [...prev, ...newImages]);
-    }
-  };
-
-  // Remove an image
-  const removeImage = (id: string) => {
-    setImages(prev => {
-      const imageToRemove = prev.find(img => img.id === id);
-      if (imageToRemove) {
-        URL.revokeObjectURL(imageToRemove.previewUrl); // Clean up memory
-      }
-      return prev.filter(img => img.id !== id);
-    });
-  };
-
-  // Clear all images
-  const clearImages = () => {
-    images.forEach(img => URL.revokeObjectURL(img.previewUrl));
-    setImages([]);
-  };
 
   useEffect(() => {
     if (user?.email) {
@@ -130,28 +82,17 @@ export default function CreateListingPage() {
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-      
-      // Create FormData object for multipart form submission
-      const formDataToSend = new FormData();
-      
-      // Add listing data as JSON string
+
       const listingData = {
         title: formData.title.trim(),
         description: formData.description.trim(),
         price: parseFloat(formData.price),
       };
-      
-      formDataToSend.append('listingData', JSON.stringify(listingData));
-      
-      // Add image files
-      images.forEach(img => {
-        formDataToSend.append('images', img.file);
-      });
 
-      // Send request with FormData (multipart/form-data content type is set automatically)
       const response = await authenticatedFetch(`${apiUrl}/api/listings`, {
         method: 'POST',
-        body: formDataToSend,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(listingData),
       });
 
       if (!response.ok) {
@@ -243,71 +184,6 @@ export default function CreateListingPage() {
                 className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                 required
               />
-            </div>
-          </div>
-          
-          {/* Image Upload */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Images (Optional)
-            </label>
-            <p className="text-sm text-gray-500 mb-3">
-              Add up to 5 images of your item. First image will be displayed as the main image.
-            </p>
-            
-            {/* Image Preview Area */}
-            {images.length > 0 && (
-              <div className="grid grid-cols-3 gap-2 mb-3">
-                {images.map((image) => (
-                  <div key={image.id} className="relative group">
-                    <img
-                      src={image.previewUrl}
-                      alt="Preview"
-                      className="w-full h-24 object-cover rounded-lg border border-gray-300"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeImage(image.id)}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-            
-            {/* File Input */}
-            <div className="flex items-center gap-2">
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleImageChange}
-                accept="image/*"
-                multiple
-                disabled={images.length >= 5}
-                className="hidden"
-              />
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={images.length >= 5}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Select Images
-              </button>
-              {images.length > 0 && (
-                <button
-                  type="button"
-                  onClick={clearImages}
-                  className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200"
-                >
-                  Clear All
-                </button>
-              )}
-              <span className="text-sm text-gray-500">
-                {images.length}/5 images selected
-              </span>
             </div>
           </div>
           
