@@ -38,11 +38,6 @@ builder.Services.AddSingleton<AspNetCoreRateLimit.IProcessingStrategy, AspNetCor
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Register Firebase service
-builder.Services.AddSingleton<IFirebaseService, FirebaseService>();
-
-// Register Firebase Storage service
-builder.Services.AddSingleton<IFirebaseStorageService, FirebaseStorageService>();
 
 builder.Services.AddControllers();
 var app = builder.Build();
