@@ -9,7 +9,6 @@ const noAuthRequired = ['/', '/login'];
 
 function MyApp({ Component, pageProps, router }: AppProps & { router: NextRouter }) {
   const isProtected = !noAuthRequired.includes(router.pathname);
-  const showFooter = router.pathname !== '/login';
 
   return (
     <AuthProvider>
@@ -23,7 +22,7 @@ function MyApp({ Component, pageProps, router }: AppProps & { router: NextRouter
             <Component {...pageProps} />
           )}
         </main>
-        {showFooter && <Footer />}
+        <Footer />
       </div>
     </AuthProvider>
   );

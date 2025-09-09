@@ -37,7 +37,7 @@ export default function Login() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+    <div className="flex flex-col items-center justify-center h-full bg-gray-50">
       <div className="max-w-md w-full text-center p-8 bg-white shadow-md rounded-lg">
         <h1 className="text-3xl font-bold text-gray-800 mb-4">Gopher Marketplace</h1>
         <p className="text-gray-600 mb-8">
