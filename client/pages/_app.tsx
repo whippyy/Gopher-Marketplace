@@ -13,13 +13,6 @@ function MyApp({ Component, pageProps, router }: AppProps & { router: NextRouter
 
   return (
     <AuthProvider>
-      {isProtected ? (
-        <ProtectedRoute>
-          <Component {...pageProps} />
-        </ProtectedRoute>
-      ) : (
-        <Component {...pageProps} />
-      )}
       <div className="flex flex-col min-h-screen">
         <main className="flex-grow">
           {isProtected ? (
