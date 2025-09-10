@@ -1,9 +1,11 @@
 'use client';
 
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 import { AuthProvider } from "../../context/AuthContext";
 import Link from "next/link";
+import Footer from '../../components/Footer';
+
+import '../app/globals.css';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,7 +29,7 @@ export default function RootLayout({
         <meta name="description" content="A marketplace for UMN students" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#F7F6F1]`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#F7F6F1] flex flex-col min-h-screen`}
       >
         {/* Navigation Bar */}
         <nav className="bg-white border-b border-gray-200 shadow-sm mb-8">
@@ -44,8 +46,9 @@ export default function RootLayout({
           </div>
         </nav>
         <AuthProvider>
-          {children}
+          <main className="flex-grow">{children}</main>
         </AuthProvider>
+        <Footer />
       </body>
     </html>
   );
