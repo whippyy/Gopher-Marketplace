@@ -4,7 +4,6 @@ import { FaGithub, FaLinkedin } from 'react-icons/fa';
 const Footer = () => {
   // TODO: Replace with your actual information
   const myName = "Henry Le";
-  const myPhotoUrl = "/profile.jpg"; // Add your photo as `profile.jpg` to the `public` folder
   const linkedinUrl = "https://www.linkedin.com/in/henry-le-dev/"; // Replace with your LinkedIn URL
   const githubUrl = "https://github.com/Henry-Le-Dev"; // Replace with your GitHub URL
 
