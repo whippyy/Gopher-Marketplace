@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
-console.log("Footer loaded")
+console.log("Footer loaded");
 
 const Footer = () => {
   // TODO: Replace with your actual information
@@ -11,27 +11,16 @@ const Footer = () => {
 
   return (
     <footer className="w-full flex justify-center p-4 bg-gray-50">
-      <div className="bg-white shadow-lg rounded-lg p-4 flex items-center space-x-4 max-w-xs w-full">
-        <Image
-          src={myPhotoUrl}
-          alt={`Photo of ${myName}`}
-          width={60}
-          height={60}
-          className="rounded-full object-cover"
-          // Fallback in case the image is missing
-          onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/60'; }}
-        />
-        <div className="flex-grow">
-          <p className="font-semibold text-gray-800">{myName}</p>
-          <div className="flex items-center space-x-3 mt-1">
-            <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Profile" className="text-gray-600 hover:text-blue-700 transition-colors">
-              <FaLinkedin size={24} />
-            </a>
-            <a href={githubUrl} target="_blank" rel="noopener noreferrer" aria-label="GitHub Profile" className="text-gray-600 hover:text-gray-900 transition-colors">
-              <FaGithub size={24} />
-            </a>
-          </div>
-        </div>
+      <div className="flex items-center space-x-4">
+        {/* Circle placeholder */}
+        <div className="w-12 h-12 rounded-full bg-gray-300" />
+        <span className="font-semibold">{myName}</span>
+        <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+          LinkedIn
+        </a>
+        <a href={githubUrl} target="_blank" rel="noopener noreferrer" className="text-gray-800 underline">
+          GitHub
+        </a>
       </div>
     </footer>
   );
