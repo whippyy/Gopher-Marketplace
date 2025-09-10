@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
+console.log("Footer loaded")
 
 const Footer = () => {
   // TODO: Replace with your actual information
