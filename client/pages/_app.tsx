@@ -28,4 +28,4 @@ function MyApp({ Component, pageProps, router }: AppProps & { router: NextRouter
   );
 }
 
-export default MyApp; 
+export default MyApp;
