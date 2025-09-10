@@ -6,8 +6,8 @@ const Footer = () => {
   // TODO: Replace with your actual information
   const myName = "Henry Le";
   const myPhotoUrl = "https://via.placeholder.com/60";
-  const linkedinUrl = "https://www.linkedin.com/in/henry-le-dev/"; // Replace with your LinkedIn URL
-  const githubUrl = "https://github.com/Henry-Le-Dev"; // Replace with your GitHub URL
+  const linkedinUrl = "https://www.linkedin.com/in/henry-le-umn/"; // Replace with your LinkedIn URL
+  const githubUrl = "https://github.com/whippyy"; // Replace with your GitHub URL
 
   return (
     <footer className="w-full flex justify-center p-4 bg-gray-50">
