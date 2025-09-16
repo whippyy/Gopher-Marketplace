@@ -36,7 +36,7 @@ export default function ProfilePage() {
     } finally {
       setIsLoadingListings(false);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (user?.email) {
