@@ -31,8 +31,11 @@ export default function ProfilePage() {
       if (!response.ok) throw new Error('Failed to fetch listings');
       const data = await response.json();
       setMyListings(data);
-    } catch {
-      setError('Could not load your listings.');
+    } catch (err) {
+      console.error(err);
+      setError(
+        err instanceof Error ? err.message : 'An unknown error occurred while loading your listings.'
+      );
     } finally {
       setIsLoadingListings(false);
     }
@@ -53,8 +56,9 @@ export default function ProfilePage() {
       });
       if (!response.ok) throw new Error('Failed to delete listing');
       setMyListings(prev => prev.filter(l => l.id !== id));
-    } catch {
-      alert('Failed to delete listing. Please try again.');
+    } catch (err) {
+      console.error(err);
+      alert(err instanceof Error ? err.message : 'Failed to delete listing. Please try again.');
     }
   };
 

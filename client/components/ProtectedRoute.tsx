@@ -9,13 +9,15 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
 
   useEffect(() => {
     if (!loading) {
-      if (!user) {
-        console.log('No user found, redirecting to login');
-        router.push('/login');
-      } else if (!user.email?.endsWith('@umn.edu')) {
+      if (user && !user.email?.endsWith('@umn.edu')) {
         console.log('Non-UMN email detected, signing out');
+        // Prevent rendering children before sign-out completes
         auth.signOut();
         alert('Only UMN students can access this platform.');
+        router.push('/login'); // Redirect after signing out
+      } else if (!user) {
+        console.log('No user found, redirecting to login');
+        router.push('/login');
       }
     }
   }, [user, loading, router]);
@@ -29,6 +31,11 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
     );
   }
 
-  // Only render children if user is authenticated and has UMN email
-  return <>{user && user.email?.endsWith('@umn.edu') ? children : null}</>;
+  // Render children only if user is authenticated and has a UMN email.
+  // Otherwise, render null while the useEffect handles the redirect.
+  if (user && user.email?.endsWith('@umn.edu')) {
+    return <>{children}</>;
+  }
+
+  return null; // Or a loading/redirecting indicator
 } 
