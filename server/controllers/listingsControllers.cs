@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using GopherMarketplace.Data;
 using GopherMarketplace.Models;
 using GopherMarketplace.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace GopherMarketplace.Controllers;
 
