@@ -15,7 +15,7 @@ namespace GopherMarketplace.Controllers
         [HttpGet("me")]
         public async Task<ActionResult<UserProfile>> GetMyProfile()
         {
-            var userEmail = HttpContext.Items["UserEmail"]?.ToString();
+            var userEmail = HttpContext.Items["UserEmail"] as string;
             if (string.IsNullOrEmpty(userEmail))
             {
                 return Unauthorized("Authentication required");
@@ -29,7 +29,7 @@ namespace GopherMarketplace.Controllers
         [HttpPut("me")]
         public async Task<ActionResult<UserProfile>> UpdateProfile([FromBody] UserProfile update)
         {
-            var userEmail = HttpContext.Items["UserEmail"]?.ToString();
+            var userEmail = HttpContext.Items["UserEmail"] as string;
             if (string.IsNullOrEmpty(userEmail))
             {
                 return Unauthorized("Authentication required");
@@ -46,7 +46,7 @@ namespace GopherMarketplace.Controllers
         [HttpPost("me")]
         public async Task<ActionResult<UserProfile>> CreateProfile([FromBody] UserProfile newProfile)
         {
-            var userEmail = HttpContext.Items["UserEmail"]?.ToString();
+            var userEmail = HttpContext.Items["UserEmail"] as string;
             if (string.IsNullOrEmpty(userEmail))
             {
                 return Unauthorized("Authentication required");
