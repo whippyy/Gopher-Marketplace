@@ -18,9 +18,9 @@ public class ListingsController : ControllerBase
 
     // GET: api/listings
     [HttpGet]
-    public ActionResult<List<Listing>> GetListings()
+    public async Task<ActionResult<List<Listing>>> GetListings()
     {
-        return _db.Listings.OrderByDescending(l => l.CreatedAt).ToList();
+        return await _db.Listings.OrderByDescending(l => l.CreatedAt).ToListAsync();
     }
 
     // POST: api/listings
@@ -28,7 +28,7 @@ public class ListingsController : ControllerBase
     public async Task<ActionResult<Listing>> CreateListing([FromBody] ListingDto newListing)
     {
         // Get authenticated user email from middleware
-        var userEmail = HttpContext.Items["UserEmail"]?.ToString();
+        var userEmail = HttpContext.Items["UserEmail"] as string;
         if (string.IsNullOrEmpty(userEmail))
         {
             return Unauthorized("Authentication required");
@@ -65,7 +65,7 @@ public class ListingsController : ControllerBase
         };
 
         _db.Listings.Add(listing);
-        _db.SaveChanges();
+        await _db.SaveChangesAsync();
         
         // 7. Return 201 Created with the new listing
         return CreatedAtAction(
@@ -80,14 +80,14 @@ public class ListingsController : ControllerBase
     public async Task<ActionResult<Listing>> UpdateListing(int id, [FromBody] ListingDto updateDto)
     {
         // Get authenticated user email from middleware
-        var userEmail = HttpContext.Items["UserEmail"]?.ToString();
+        var userEmail = HttpContext.Items["UserEmail"] as string;
         if (string.IsNullOrEmpty(userEmail))
         {
             return Unauthorized("Authentication required");
         }
 
         // Find the listing
-        var listing = _db.Listings.Find(id);
+        var listing = await _db.Listings.FindAsync(id);
         if (listing == null)
         {
             return NotFound();
@@ -113,7 +113,7 @@ public class ListingsController : ControllerBase
             listing.Price = updateDto.Price;
         }
 
-        _db.SaveChanges();
+        await _db.SaveChangesAsync();
         return Ok(listing);
     }
 
@@ -122,13 +122,13 @@ public class ListingsController : ControllerBase
     public async Task<IActionResult> DeleteListing(int id)
     {
         // Get authenticated user email from middleware
-        var userEmail = HttpContext.Items["UserEmail"]?.ToString();
+        var userEmail = HttpContext.Items["UserEmail"] as string;
         if (string.IsNullOrEmpty(userEmail))
         {
             return Unauthorized("Authentication required");
         }
 
-        var listing = _db.Listings.Find(id);
+        var listing = await _db.Listings.FindAsync(id);
         if (listing == null)
         {
             return NotFound();
@@ -139,33 +139,33 @@ public class ListingsController : ControllerBase
             return Forbid();
 
         _db.Listings.Remove(listing);
-        _db.SaveChanges();
+        await _db.SaveChangesAsync();
         return NoContent(); // HTTP 204
     }
     
     // GET: api/listings/{id}
     [HttpGet("{id}")]
-    public ActionResult<Listing> GetListing(int id)
+    public async Task<ActionResult<Listing>> GetListing(int id)
     {
-        var listing = _db.Listings.Find(id);
+        var listing = await _db.Listings.FindAsync(id);
         return listing != null ? Ok(listing) : NotFound();
     }
 
     // GET: api/listings/my
     [HttpGet("my")]
-    public ActionResult<List<Listing>> GetMyListings()
+    public async Task<ActionResult<List<Listing>>> GetMyListings()
     {
         // Get authenticated user email from middleware
-        var userEmail = HttpContext.Items["UserEmail"]?.ToString();
+        var userEmail = HttpContext.Items["UserEmail"] as string;
         if (string.IsNullOrEmpty(userEmail))
         {
             return Unauthorized("Authentication required");
         }
 
-        var listings = _db.Listings
+        var listings = await _db.Listings
             .Where(l => l.OwnerId == userEmail)
             .OrderByDescending(l => l.CreatedAt)
-            .ToList();
+            .ToListAsync();
 
         return Ok(listings);
     }
