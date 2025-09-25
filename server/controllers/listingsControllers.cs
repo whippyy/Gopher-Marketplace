@@ -62,7 +62,6 @@ public class ListingsController : ControllerBase
             ContactEmail = userEmail,
             CreatedAt = DateTime.UtcNow,
             OwnerId = userEmail,
-            ImageUrls = new List<string>()
         };
 
         _db.Listings.Add(listing);
