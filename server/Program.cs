@@ -32,20 +32,20 @@ builder.Services.AddGopherMarketplaceServices(builder.Configuration);
 builder.Services.AddControllers();
 var app = builder.Build();
 
-// Initialize DB (creates DB if it doesn't exist)
-using (var scope = app.Services.CreateScope())
+// --- Production-Ready Database Initialization and Seeding ---
+// This block will apply migrations and seed the database if it's empty.
+// It's safer and more robust than EnsureCreated().
+await using (var scope = app.Services.CreateAsyncScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated();
-}
-
-// Seed sample listings if DB is empty
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    if (!db.Listings.Any())
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    
+    // Apply any pending migrations
+    await dbContext.Database.MigrateAsync();
+    
+    // Seed data only if the listings table is empty
+    if (!await dbContext.Listings.AnyAsync())
     {
-        db.Listings.AddRange(new List<Listing>
+        dbContext.Listings.AddRange(new List<Listing>
         {
             new() { Title = "Calculus Textbook", Price = 25.99m, ContactEmail = "user1@umn.edu", OwnerId = "seed-user1" },
             new() { Title = "Bike", Price = 120.50m, ContactEmail = "user2@umn.edu", OwnerId = "seed-user2" },
@@ -53,9 +53,10 @@ using (var scope = app.Services.CreateScope())
             new() { Title = "Laptop Stand", Price = 15.99m, ContactEmail = "user4@umn.edu", OwnerId = "seed-user4" },
             new() { Title = "Desk Chair", Price = 75.00m, ContactEmail = "user5@umn.edu", OwnerId = "seed-user5" }
         });
-        db.SaveChanges();
+        await dbContext.SaveChangesAsync();
     }
 }
+// --- End of Database Initialization ---
 
 // Apply the named CORS policy globally (MUST be before auth middlewares)
 app.UseCors("AllowFrontend");
