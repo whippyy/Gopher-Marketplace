@@ -60,13 +60,17 @@ await using (var scope = app.Services.CreateAsyncScope())
 }
 // --- End of Database Initialization ---
 
-// Apply the named CORS policy globally (MUST be before auth middlewares)
-app.UseCors("AllowFrontend");
+// --- Configure the HTTP request pipeline ---
+
+// 1. Redirect HTTP requests to HTTPS
+app.UseHttpsRedirection();
+
+// 2. Apply the CORS policy. This MUST be before UseAuthorization.
+app.UseCors("AllowFrontend"); 
 
 // Use custom middleware
 app.UseGopherMarketplaceMiddleware();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseHttpsRedirection();
 app.MapControllers();
 app.Run();
