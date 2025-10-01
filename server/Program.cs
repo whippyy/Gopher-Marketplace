@@ -30,6 +30,9 @@ builder.Services.AddCors(options =>
 // Add application services from the extension method
 builder.Services.AddGopherMarketplaceServices(builder.Configuration);
 
+// Add health check services
+builder.Services.AddHealthChecks();
+
 builder.Services.AddControllers();
 var app = builder.Build();
 
@@ -72,4 +75,8 @@ app.UseGopherMarketplaceMiddleware();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+// 3. Map a health check endpoint. The frontend can ping this to wake up the service.
+app.MapHealthChecks("/healthz");
+
 app.Run();
