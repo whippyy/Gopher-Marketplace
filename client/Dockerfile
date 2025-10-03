@@ -1,5 +1,4 @@
 FROM node:20-alpine
-
 # Firebase and API build-time environment variables
 # These will be populated by Render from your service's environment variables.
 ARG NEXT_PUBLIC_API_URL
