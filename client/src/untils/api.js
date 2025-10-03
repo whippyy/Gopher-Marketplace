@@ -21,9 +21,12 @@ export const warmUpServer = async (maxRetries = 5, delay = 2000) => {
         return true;
       }
     } catch (error) {
-      // This catch block will likely execute on a 503 or network error
-      console.log(`Server not ready, attempt ${i + 1} of ${maxRetries}. Retrying in ${delay / 1000}s...`);
+      console.log(
+        `Server not ready, attempt ${i + 1} of ${maxRetries}. Retrying in ${delay / 1000}s...`,
+        error.message
+      );
     }
+
     
     // Wait for the specified delay before the next attempt
     await new Promise(resolve => setTimeout(resolve, delay));
