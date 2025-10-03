@@ -2,8 +2,14 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /app
 COPY ./server ./server
+
+# Copy csproj and restore as distinct layers to leverage caching
 WORKDIR /app/server
-RUN dotnet restore
+COPY ./server/*.csproj .
+RUN dotnet restore 
+
+# Copy everything else and publish
+COPY . .
 RUN dotnet publish -c Release -o out
 
 # Runtime stage
