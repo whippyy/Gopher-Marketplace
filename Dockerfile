@@ -1,18 +1,22 @@
-# Build stage
+# build stage
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-WORKDIR /app
+WORKDIR /src
 
-# Copy csproj and restore as distinct layers
+# copy csproj and restore
 COPY ./server/*.csproj ./server/
-WORKDIR /app/server
-RUN dotnet restore
+RUN dotnet restore ./server/server.csproj
 
-# Copy everything else and publish
+# copy everything else
 COPY ./server ./server
-RUN dotnet publish server.csproj -c Release -o out
 
-# Runtime stage
-FROM mcr.microsoft.com/dotnet/aspnet:9.0
+# set workdir into project folder
+WORKDIR /src/server
+
+# publish to /app/out
+RUN dotnet publish -c Release -o /app/out
+
+# runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
-COPY --from=build /app/server/out ./
+COPY --from=build /app/out .
 ENTRYPOINT ["dotnet", "server.dll"]
