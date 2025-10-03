@@ -10,7 +10,7 @@ RUN dotnet restore
 
 # Copy everything else and publish
 COPY . .
-RUN dotnet publish -c Release -o out
+RUN dotnet publish server.csproj -c Release -o out
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
