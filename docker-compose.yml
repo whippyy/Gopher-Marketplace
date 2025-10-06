@@ -7,7 +7,7 @@ services:
       - "5050:8080" # ASP.NET default Kestrel port inside container
     environment:
       - ASPNETCORE_URLS=http://+:8080
-      - ConnectionStrings__DefaultConnection=...
+      - ConnectionStrings__DefaultConnection=Data Source=/app/gopher-marketplace.db
 
   web:
     build:
@@ -25,4 +25,3 @@ services:
       - "3000:3000"
     depends_on:
       - api
-
