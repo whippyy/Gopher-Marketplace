@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# Create runtime config file
+cat > /app/public/config.json << EOL
+{
+  "API_URL": "${NEXT_PUBLIC_API_URL}",
+  "FIREBASE_API_KEY": "${NEXT_PUBLIC_FIREBASE_API_KEY}",
+  "FIREBASE_AUTH_DOMAIN": "${NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN}",
+  "FIREBASE_PROJECT_ID": "${NEXT_PUBLIC_FIREBASE_PROJECT_ID}",
+  "FIREBASE_STORAGE_BUCKET": "${NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}",
+  "FIREBASE_MESSAGING_SENDER_ID": "${NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID}",
+  "FIREBASE_APP_ID": "${NEXT_PUBLIC_FIREBASE_APP_ID}"
+}
+EOL
+
+echo "Generated runtime config:"
+cat /app/public/config.json
+
+exec "$@"
