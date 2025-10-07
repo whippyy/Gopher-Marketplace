@@ -26,3 +26,6 @@ dist/
 
 # Firebase
 firebase-service-account.json
+
+#Venv
+venv/
