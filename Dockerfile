@@ -1,16 +1,13 @@
 # build stage
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-WORKDIR /src
+WORKDIR /src/server
 
 # copy csproj and restore
-COPY ./server/*.csproj ./server/
-RUN dotnet restore ./server/server.csproj
+COPY ./server/server.csproj .
+RUN dotnet restore
 
 # copy everything else
-COPY ./server ./server
-
-# set workdir into project folder
-WORKDIR /src/server
+COPY ./server/. .
 
 # publish to /app/out
 RUN dotnet publish -c Release -o /app/out

@@ -3,6 +3,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 COPY package*.json ./
+COPY next.config.mjs ./
 RUN npm ci
 COPY . .
 
