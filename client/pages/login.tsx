@@ -1,13 +1,20 @@
 import { signInWithPopup } from 'firebase/auth';
-import { auth, googleProvider } from '../lib/firebase';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { initializeFirebase, auth, googleProvider } from '../lib/firebase';
 
 export default function Login() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [firebaseInitialized, setFirebaseInitialized] = useState(false);
+
+  useEffect(() => {
+    initializeFirebase().then(() => {
+      setFirebaseInitialized(true);
+    });
+  }, []);
 
   const handleGoogleLogin = async () => {
     setLoading(true);
@@ -51,10 +58,10 @@ export default function Login() {
         <button 
           onClick={handleGoogleLogin}
           className="w-full bg-maroon text-white p-3 rounded-lg flex items-center justify-center text-lg hover:bg-red-700 transition-colors disabled:opacity-50"
-          disabled={loading}
+          disabled={loading || !firebaseInitialized}
         >
           <Image src="https://www.google.com/favicon.ico" alt="Google icon" width={24} height={24} className="mr-3" />
-          {loading ? 'Signing In...' : 'Sign in with UMN Account'}
+          {loading ? 'Signing In...' : (firebaseInitialized ? 'Sign in with UMN Account' : 'Initializing...')}
         </button>
       </div>
     </div>
