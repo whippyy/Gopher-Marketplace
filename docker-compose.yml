@@ -1,13 +1,17 @@
+version: '3.8'
+
 services:
   api:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.api  # Create separate Dockerfile for API
     ports:
-      - "5050:8080" # ASP.NET default Kestrel port inside container
+      - "5050:8080"
     environment:
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=Data Source=/app/gopher-marketplace.db
+    networks:
+      - app-network
 
   web:
     build:
@@ -23,5 +27,14 @@ services:
         NEXT_PUBLIC_FIREBASE_APP_ID: ${NEXT_PUBLIC_FIREBASE_APP_ID}
     ports:
       - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://api:8080
     depends_on:
       - api
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
